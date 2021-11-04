@@ -1,9 +1,7 @@
-src/index.js 
 const Koa = require('koa');
 const config = require('config');
 const { getLogger } = require('./core/logging')
 
-const NODE_ENV = process.env.NODE_ENV;
 const LOG_LEVEL = config.get('log.level');
 const LOG_DISABLED = config.get('log.disabled');
 
@@ -14,7 +12,7 @@ const logger = getLogger();
 
 
 app.use(async (ctx, next) => {
-	ctx.body = 'Goodbye world';
+	ctx.body = 'skgfhhhhhrttttttttttttttttdsss';
 	next();
 });
 
