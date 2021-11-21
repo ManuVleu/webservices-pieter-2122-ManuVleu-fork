@@ -1,0 +1,43 @@
+const Router = require('@koa/router');
+const gebruikerService = require('../service/gebruiker');
+
+const getAllGebruikers = async (ctx) => {
+	ctx.body = gebruikerService.getAll();
+};
+
+const createGebruiker = async (ctx) => {
+	const newGebruiker = gebruikerService.create(ctx.request.body);
+	ctx.body = newGebruiker;
+};
+
+const getGebruikerById = async (ctx) => {
+	ctx.body = gebruikerService.getById(ctx.params.id);
+};
+
+const updateGebruiker = async (ctx) => {
+	ctx.body = gebruikerService.updateById(ctx.params.id, ctx.request.body);
+};
+
+const deleteGebruiker = async (ctx) => {
+	gebruikerService.deleteById(ctx.params.id);
+	ctx.status = 204;
+};
+
+/**
+ * Install transaction routes in the given router.
+ *
+ * @param {Router} app - The parent router.
+ */
+module.exports = (app) => {
+	const router = new Router({
+		prefix: '/gebruikers',
+	});
+
+	router.get('/', getAllGebruikers);
+	router.post('/', createGebruiker);
+	router.get('/:id', getGebruikerById);
+	router.put('/:id', updateGebruiker);
+	router.delete('/:id', deleteGebruiker);
+
+	app.use(router.routes()).use(router.allowedMethods());
+};
