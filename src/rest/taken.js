@@ -2,24 +2,24 @@ const Router = require('@koa/router');
 const taakService = require('../service/taak');
 
 const getAllTaken = async (ctx) => {
-	ctx.body = taakService.getAll();
+	ctx.body = await taakService.getAll();
 };
 
 const createTaak = async (ctx) => {
-	const newTaak = taakService.create(ctx.request.body);
+	const newTaak = await taakService.create(ctx.request.body);
 	ctx.body = newTaak;
 };
 
 const getTaakById = async (ctx) => {
-	ctx.body = taakService.getById(ctx.params.id);
+	ctx.body = await taakService.getById(ctx.params.id);
 };
 
 const updateTaak = async (ctx) => {
-	ctx.body = taakService.updateById(ctx.params.id, ctx.request.body);
+	ctx.body = await taakService.updateById(ctx.params.id, ctx.request.body);
 };
 
 const deleteTaak = async (ctx) => {
-	taakService.deleteById(ctx.params.id);
+	await taakService.deleteById(ctx.params.id);
 	ctx.status = 204;
 };
 

@@ -2,24 +2,24 @@ const Router = require('@koa/router');
 const stockmarketService = require('../service/stockmarket');
 
 const getAllStockmarkets = async (ctx) => {
-	ctx.body = stockmarketService.getAll();
+	ctx.body = await stockmarketService.getAll();
 };
 
 const createStockmarket = async (ctx) => {
-	const newStockmarket = stockmarketService.create(ctx.request.body);
+	const newStockmarket = await stockmarketService.create(ctx.request.body);
 	ctx.body = newStockmarket;
 };
 
 const getStockmarketById = async (ctx) => {
-	ctx.body = stockmarketService.getById(ctx.params.id);
+	ctx.body = await stockmarketService.getById(ctx.params.id);
 };
 
 const updateStockmarket = async (ctx) => {
-	ctx.body = stockmarketService.updateById(ctx.params.id, ctx.request.body);
+	ctx.body = await stockmarketService.updateById(ctx.params.id, ctx.request.body);
 };
 
 const deleteStockmarket = async (ctx) => {
-	stockmarketService.deleteById(ctx.params.id);
+	await stockmarketService.deleteById(ctx.params.id);
 	ctx.status = 204;
 };
 

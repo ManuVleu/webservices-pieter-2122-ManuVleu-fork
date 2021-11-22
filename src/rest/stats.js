@@ -2,24 +2,24 @@ const Router = require('@koa/router');
 const statsService = require('../service/stats');
 
 const getAllStats = async (ctx) => {
-	ctx.body = statsService.getAll();
+	ctx.body = await statsService.getAll();
 };
 
 const createStat = async (ctx) => {
-	const newStat = statsService.create(ctx.request.body);
+	const newStat = await statsService.create(ctx.request.body);
 	ctx.body = newStats;
 };
 
 const getStatById = async (ctx) => {
-	ctx.body = statsService.getById(ctx.params.id);
+	ctx.body = await statsService.getById(ctx.params.id);
 };
 
 const updateStat = async (ctx) => {
-	ctx.body = statsService.updateById(ctx.params.id, ctx.request.body);
+	ctx.body = await statsService.updateById(ctx.params.id, ctx.request.body);
 };
 
 const deleteStat = async (ctx) => {
-	statsService.deleteById(ctx.params.id);
+	await statsService.deleteById(ctx.params.id);
 	ctx.status = 204;
 };
 

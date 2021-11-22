@@ -2,24 +2,24 @@ const Router = require('@koa/router');
 const gewoonteService = require('../service/gewoonte');
 
 const getAllGewoontes = async (ctx) => {
-	ctx.body = gewoonteService.getAll();
+	ctx.body = await gewoonteService.getAll();
 };
 
 const createGewoonte = async (ctx) => {
-	const newGewoonte = gewoonteService.create(ctx.request.body);
+	const newGewoonte = await gewoonteService.create(ctx.request.body);
 	ctx.body = newGewoonte;
 };
 
 const getGewoonteById = async (ctx) => {
-	ctx.body = gewoonteService.getById(ctx.params.id);
+	ctx.body = await gewoonteService.getById(ctx.params.id);
 };
 
 const updateGewoonte = async (ctx) => {
-	ctx.body = gewoonteService.updateById(ctx.params.id, ctx.request.body);
+	ctx.body = await gewoonteService.updateById(ctx.params.id, ctx.request.body);
 };
 
 const deleteGewoonte = async (ctx) => {
-	gewoonteService.deleteById(ctx.params.id);
+	await gewoonteService.deleteById(ctx.params.id);
 	ctx.status = 204;
 };
 
