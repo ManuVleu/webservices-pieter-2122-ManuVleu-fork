@@ -54,20 +54,20 @@ const getById = async (id) => {
  * @param {object} taak - The taak to create.
  * @param {string} taak.naam - Naam van de taak.
  * @param {Date} taak.eindDatum - De taak moet voltooid worden voor deze datum.
- * @param {number} taak.punten - Punten die de taak opbrengt als je het voltooid.
+ * @param {number} taak.geld - geld die de taak opbrengt als je het voltooid.
  * @param {string} taak.gebruikersnaam - Naam van de gebruiker van de taak.
  */
-const create = async ({ naam, eindDatum, punten,gebruikersnaam }) => {
+const create = async ({ naam, eindDatum, geld,gebruikersnaam }) => {
 	//in repo
     //const today = new Date();
     //const date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-	debugLog('Nieuwe taak aan het maken', {naam, eindDatum, punten});
+	debugLog('Nieuwe taak aan het maken', {naam, eindDatum, geld});
 	
 	// For now simply create a new user every time
 	const { id: gebruikerID } = await gebruikerService.register({ naam: gebruikersnaam });
 
 	return taakRepo.create({
-		naam, eindDatum, punten,gebruikerID,
+		naam, eindDatum, geld,gebruikerID,
 	});
 };
 
@@ -78,18 +78,18 @@ const create = async ({ naam, eindDatum, punten,gebruikersnaam }) => {
  * @param {object} taak - The taak to create.
  * @param {string} [taak.naam] - naam van de taak.
  * @param {string} [taak.eindDatum] - De taak moet voltooid worden voor deze datum.
- * @param {number} [taak.punten] - punten die de taak opbrengt als je het voltooid.
+ * @param {number} [taak.geld] - geld die de taak opbrengt als je het voltooid.
   * @param {string} [taak.gebruikersnaam] - Naam van de gebruiker van de taak.
  */
-const updateById = async (id, { naam, eindDatum, punten }) => {
-	debugLog(`Updating taak met id ${id}`, { naam, eindDatum, punten, gebruikersnaam });
+const updateById = async (id, { naam, eindDatum, geld }) => {
+	debugLog(`Updating taak met id ${id}`, { naam, eindDatum, geld, gebruikersnaam });
     
 	const {id: gebruikerID } = await gebruikerService.register({naam: gebruikersnaam});
 
 	return taakRepo.updateById(id, {
 		naam,
 		eindDatum,
-		punten,
+		geld,
 		gebruikerID
 	});
 

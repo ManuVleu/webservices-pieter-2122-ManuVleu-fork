@@ -19,7 +19,7 @@ initializeLogger({
 	isProduction: NODE_ENV === 'production',
 	defaultMeta: { NODE_ENV },
 });
-}
+
 
 await initializeData();
 
@@ -47,5 +47,5 @@ installRest(app);
 
 app.listen(9000);
 logger.info(`🚀 Server listening on http://localhost:9000`);
-
+}
 main();

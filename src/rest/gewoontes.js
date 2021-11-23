@@ -2,7 +2,8 @@ const Router = require('@koa/router');
 const gewoonteService = require('../service/gewoonte');
 
 const getAllGewoontes = async (ctx) => {
-	ctx.body = await gewoonteService.getAll();
+	const { limit,offset } = ctx.query;//In de URL ezlf limit en offset meegeven
+	ctx.body = await gewoonteService.getAll(Number(limit),Number(offset));
 };
 
 const createGewoonte = async (ctx) => {

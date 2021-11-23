@@ -1,8 +1,7 @@
 const config = require('config');
 const knex = require('knex');
-const { join } = require('path');
 
-import { getChildLogger } from require('../core/logging');
+const { getChildLogger } = require('../core/logging');
 
 const NODE_ENV = config.get('env');
 const isDevelopment = NODE_ENV === 'development';
@@ -73,7 +72,7 @@ const getKnexLogger = (logger, level) => (message) => {
   
     logger.info('Succesfully connected to the database');
   
-    return knexInstance;
+    return knexInstance;//Eigenlijk overbodig maja
   }
 
   async function shutdownData() {
@@ -92,13 +91,13 @@ const getKnexLogger = (logger, level) => (message) => {
     return knexInstance;
   }
   
-  const tables = {
+  const tables = Object.freeze({
     gebruikers: 'gebruikers',
     gewoontes: 'gewoontes',
     taken: 'taken',
     stats: 'stats',
     stockmarket: 'stockmarket'
-  };
+  });
   
   module.exports = {
     tables,

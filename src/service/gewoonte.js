@@ -54,20 +54,20 @@ const getById = async (id) => {
  * @param {object} gewoonte - The gewoonte to create.
  * @param {string} gewoonte.naam - Naam van de gewoonte.
  * @param {string} gewoonte.soort - Soort van gewoonte, kan alleen 'Dagelijks','Wekelijks' of 'Maandelijks' zijn.
- * @param {number} gewoonte.punten - Punten die de gewoonte opbrengt als je het voltooid.
+ * @param {number} gewoonte.geld - geld die de gewoonte opbrengt als je het voltooid.
  * @param {string} gewoonte.gebruikersnaam - Naam van de gebruiker van de gewoonte.
  */
-const create = async ({ naam, soort, punten,gebruikersnaam }) => {
+const create = async ({ naam, soort, geld,gebruikersnaam }) => {
 	//in repo
     //const today = new Date();
     //const date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-	debugLog('Nieuwe gewoonte aan het maken', {naam, soort, punten});
+	debugLog('Nieuwe gewoonte aan het maken', {naam, soort, geld});
 	
 	// For now simply create a new user every time
 	const { id: gebruikerID } = await gebruikerService.register({ naam: gebruikersnaam });
 
 	return gewoonteRepo.create({
-		naam, soort, punten,gebruikerID,
+		naam, soort, geld,gebruikerID,
 	});
 };
 
@@ -78,18 +78,18 @@ const create = async ({ naam, soort, punten,gebruikersnaam }) => {
  * @param {object} gewoonte - The gewoonte to create.
  * @param {string} [gewoonte.naam] - naam van de gewoonte.
  * @param {string} [gewoonte.soort] - Soort van gewoonte, kan alleen 'Dagelijks','Wekelijks' of 'Maandelijks' zijn.
- * @param {number} [gewoonte.punten] - punten die de gewoonte opbrengt als je het voltooid.
+ * @param {number} [gewoonte.geld] - geld die de gewoonte opbrengt als je het voltooid.
   * @param {string} [gewoonte.gebruikersnaam] - Naam van de gebruiker van de gewoonte.
  */
-const updateById = async (id, { naam, soort, punten }) => {
-	debugLog(`Updating gewoonte met id ${id}`, { naam, soort, punten, gebruikersnaam });
+const updateById = async (id, { naam, soort, geld }) => {
+	debugLog(`Updating gewoonte met id ${id}`, { naam, soort, geld, gebruikersnaam });
     
 	const {id: gebruikerID } = await gebruikerService.register({naam: gebruikersnaam});
 
 	return gewoonteRepo.updateById(id, {
 		naam,
 		soort,
-		punten,
+		geld,
 		gebruikerID
 	});
 

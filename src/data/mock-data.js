@@ -21,7 +21,7 @@ let GEWOONTES = [
         startDatum: getDateNow(),
         soortHerhaling: 'Dagelijks',
         minAantalKeerVoltooid: 1,
-        puntenBijVoltooiing: 15,
+        geldBijVoltooiing: 15,
         aantalKeerVoltooid: 0,
         aantalKeerVoltooidTotaal: 3
     },
@@ -32,7 +32,7 @@ let GEWOONTES = [
         startDatum: getDateNow(),
         soortHerhaling: 'Maandelijks',
         minAantalKeerVoltooid: 2,
-        puntenBijVoltooiing: 40,
+        geldBijVoltooiing: 40,
         aantalKeerVoltooid: 1,
         aantalKeerVoltooidTotaal: 16
     },
@@ -43,7 +43,7 @@ let GEWOONTES = [
         startDatum: getDateNow(),
         soortHerhaling: 'Wekelijks',
         minAantalKeerVoltooid: 4,
-        puntenBijVoltooiing: 40,
+        geldBijVoltooiing: 40,
         aantalKeerVoltooid: 4,
         aantalKeerVoltooidTotaal: 48
     }
@@ -56,7 +56,7 @@ let TAKEN = [
         naam: 'Ga naar de bib',
         startDatum: getDateNow(),
         eindDatum: '2022-02-01 23:59:00',
-        puntenBijVoltooiing: 5
+        geldBijVoltooiing: 5
     },
     {
         taakID: 2,
@@ -64,7 +64,7 @@ let TAKEN = [
         naam: 'Schrijf verslag',
         startDatum: getDateNow(),
         eindDatum: '2022-01-01 23:59:00',
-        puntenBijVoltooiing: 80
+        geldBijVoltooiing: 80
     }
 ];
 

@@ -1,103 +1,113 @@
 const uuid = require('uuid');
-const { tables, getKnex } = require('../data/index');
+const { tables, getKnex } = require('../data');
 const { getChildLogger } = require('../core/logging');
 
 const SELECT_COLUMNS = [
-  `${tables.gewoontes}.id`, 'amount', 'date',
-  `${tables.place}.id as place_id`, `${tables.place}.name as place_name`,
-  `${tables.user}.id as user_id`, `${tables.user}.name as user_name`,
+  'gewoonteID',`gebruikersID`,`${tables.gebruikers}.naam as gebruikersnaam`,
+  `${tables.gewoontes}.naam as gewoonteNaam`,
+  `startDatum`,'aantalKeerVoltooid','laatsteKeerVoltooid','soortHerhaling',
+  `geldBijVoltooiing`,
 ];
 
-const formatTransaction = ({ place_id, place_name, user_id, user_name, ...rest }) => ({
+const formatGewoonte = ({ gebruiker_id,gebruiker_naam, ...rest }) => ({
 	...rest,
-	place: {
-		id: place_id,
-		name: place_name,
-	},
-	user: {
-		id: user_id,
-		name: user_name,
+	gebruiker: {
+		id: gebruiker_id,
+		naam: gebruiker_naam,
 	},
 });
 
 
 /**
- * Get all `limit` transactions, throws on error.
+ * Get all `limit` gewoontes van gegeven gebruiker, throws on error.
  *
  * @param {object} pagination - Pagination options
  * @param {number} pagination.limit - Nr of transactions to return.
+ * @param {string} gebruikersID - De id van de gebruiker van de gewoontes.
  * @param {number} pagination.offset - Nr of transactions to skip.
  */
 const findAll = async ({
   limit,
   offset,
+  gebruikersID,
 }) => {
-  const transactions = await getKnex()(tables.transaction)
+  const gewoontes = await getKnex()(tables.gewoontes)
     .select(SELECT_COLUMNS)
-    .join(tables.place, `${tables.transaction}.place_id`, '=', `${tables.place}.id`)
-    .join(tables.user, `${tables.transaction}.user_id`, '=', `${tables.user}.id`)
+    .where(`${tables.gewoontes}.gebruikersID`,gebruikersID)
+    .join(tables.gebruikers, `${tables.gewoontes}.gebruikersID`, '=', `${tables.gebruikers}.id`)
     .limit(limit)
     .offset(offset)
-    .orderBy('date', 'ASC');
+    .orderBy('startDatum', 'ASC');
 
-  return transactions.map(formatTransaction);
+  return gewoontes.map(formatGewoonte);
 };
 
 /**
- * Calculate the total number of transactions.
+ * Calculate the total number of gewoontes per gebruiker.
+ * @param {string} gebruikersID - De id van de gebruiker van de gewoontes.
+ * 
  */
-const findCount = async () => {
-  const [count] = await getKnex()(tables.transaction)
+const findCount = async (gebruikersID) => {
+  const [count] = await getKnex()(tables.gewoontes)
+  .where(`${tables.gewoontes}.gebruikersID`,gebruikersID)
     .count();
 
   return count['count(*)'];
 };
 
 /**
- * Find a transaction with the given `id`.
+ * Find a gewoonte van een gebruiker met id `gebruikersID` with the given `gewoonteID` .
  *
- * @param {string} id - Id of the transaction to find.
+ * @param {string} gebruikersID - Id of the gebruiker van de gewoontes.
+ * @param {string} gewoonteID - Id of the gewoonte to find.
  */
-const findById = async (id) => {
-  const transaction = await getKnex()(tables.transaction)
+const findById = async (gebruikersID,gewoonteID) => {
+  const gewoonte = await getKnex()(tables.gewoontes)
     .first(SELECT_COLUMNS)
-    .where(`${tables.transaction}.id`, id)
-    .join(tables.place, `${tables.transaction}.place_id`, '=', `${tables.place}.id`)
-    .join(tables.user, `${tables.transaction}.user_id`, '=', `${tables.user}.id`);
+    .where(`${tables.gewoontes}.gewoonteID`, gewoonteID)
+    .andWhere(`${tables.gebruikers}.id`,gebruikersID)
+    .join(tables.gebruikers, `${tables.gewoontes}.gebruikersID`, '=', `${tables.gebruikers}.id`)
   
-  return transaction && formatTransaction(transaction);
+  return gewoonte && formatGewoonte(gewoonte);
 };
 
 /**
- * Create a new transaction.
+ * Create a new gewoonte.
  *
- * @param {object} transaction - The transaction to create.
- * @param {string} transaction.amount - Amount deposited/withdrawn.
- * @param {Date} transaction.date - Date of the transaction.
- * @param {string} transaction.placeId - Id of the place the transaction happened.
- * @param {string} transaction.userId - Id of the user who did the transaction.
+ * @param {object} gewoonte - The gewoonte to create.
+ * @param {string} gewoonte.gebruikersID - De id van de gebruiker voor de nieuwe gewoonte.
+ * @param {string} gewoonte.naam - Naam van de gewoonte.
+ * @param {number} gewoonte.geldBijVoltooiing - Hoeveelheid geld je krijgt als je de gewoonte voltooid.
+ * @param {string} gewoonte.soortHerhaling - Hoeveel keer je de gewoonte doet. Kan alleen 'Dagelijks','Wekelijks' of 'Maandelijks' zijn.
  *
- * @returns {Promise<object>} Created transaction
+ * @returns {Promise<object>} Created gewoote
  */
 const create = async ({
-  amount,
-  date,
-  placeId,
-  userId,
+  gebruikersID,
+  naam,
+  geldBijVoltooiing,
+  soortHerhaling,
 }) => {
   try {
     const id = uuid.v4();
-    await getKnex()(tables.transaction)
+    const today = new Date();
+    const startDatum = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+    const aantalKeerVoltooid = 0;
+    const laatsteKeerVoltooid = startDatum;
+    await getKnex()(tables.gewoontes)
       .insert({
         id,
-        amount,
-        date,
-        place_id: placeId,
-        user_id: userId,
+        gebruikersID,
+        naam,
+        startDatum,
+        geldBijVoltooiing,
+        aantalKeerVoltooid,
+        laatsteKeerVoltooid,
+        soortHerhaling,
       });
-    return await findById(id);
+    return await findById(gebruikersID,id);
   } catch (error) {
-    const logger = getChildLogger('transactions-repo');
+    const logger = getChildLogger('gewoontes-repo');
     logger.error('Error in create', {
       error,
     });
@@ -106,35 +116,34 @@ const create = async ({
 };
 
 /**
- * Update an existing transaction.
+ * Update an existing gewoonte.
  *
- * @param {string} id - Id of the transaction to update.
- * @param {object} transaction - The transaction data to save.
- * @param {string} [transaction.amount] - Amount deposited/withdrawn.
- * @param {Date} [transaction.date] - Date of the transaction.
- * @param {string} [transaction.placeId] - Id of the place the transaction happened.
- * @param {string} [transaction.userId] - Id of the user who did the transaction.
+ * @param {object} gewoonte - The gewoonte to create.
+ * @param {string} gewoonte.gebruikersID - De id van de gebruiker van de gewoonte.
+ * @param {string} gewoonte.id - De id van de gewoonte.
+ * @param {string} gewoonte.naam - Naam van de gewoonte.
+ * @param {number} gewoonte.geldBijVoltooiing - Hoeveelheid geld je krijgt als je de gewoonte voltooid.
+ * @param {Date} gewoonte.startDatum - Datum vanaf wanneer de gewoonte weer min 1 keer moet uitgevoerd worden. Hangt dus vast aan soortHerhaling.
  *
- * @returns {Promise<object>} Updated transaction
+ * @returns {Promise<object>} Updated gewoonte
  */
-const updateById = async (id, {
-  amount,
-  date,
-  placeId,
-  userId,
+const updateById = async (gebruikersID,id, {
+  naam,
+  geldBijVoltooiing,
+  startDatum
 }) => {
   try {
-    await getKnex()(tables.transaction)
+    await getKnex()(tables.gewoontes)
       .update({
-        amount,
-        date,
-        place_id: placeId,
-        user_id: userId,
+        naam,
+        geldBijVoltooiing,
+        startDatum
       })
-      .where(`${tables.transaction}.id`, id);
+      .where(`${tables.gewoontes}.gewoonteID`, gewoonteID)
+    .andWhere(`${tables.gebruikers}.id`,gebruikersID);
     return await findById(id);
   } catch (error) {
-    const logger = getChildLogger('transactions-repo');
+    const logger = getChildLogger('gewoontes-repo');
     logger.error('Error in updateById', {
       error,
     });
@@ -143,20 +152,22 @@ const updateById = async (id, {
 };
 
 /**
- * Delete a transaction with the given `id`.
+ * Delete a gewoonte with the given `id`.
  *
- * @param {string} id - Id of the transaction to delete.
+ * @param {string} id - Id of the gewoonte to delete.
+ * @param {string} gebruikersID - Id of the gebruiker van de gewoonte to delete.
  *
- * @returns {Promise<boolean>} Whether the transaction was deleted.
+ * @returns {Promise<boolean>} Whether the gewoonte was deleted.
  */
-const deleteById = async (id) => {
+const deleteById = async (gebruikersID,id) => {
   try {
-    const rowsAffected = await getKnex()(tables.transaction)
+    const rowsAffected = await getKnex()(tables.gewoontes)
       .delete()
-      .where(`${tables.transaction}.id`, id);
+      .where(`${tables.gewoontes}.id`, id)
+      .andWhere(`${tables.gebruikers}.id`,gebruikersID);
     return rowsAffected > 0;
   } catch (error) {
-    const logger = getChildLogger('transactions-repo');
+    const logger = getChildLogger('gewoontes-repo');
     logger.error('Error in deleteById', {
       error,
     });
