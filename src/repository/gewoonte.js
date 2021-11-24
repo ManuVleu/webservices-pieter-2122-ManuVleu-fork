@@ -22,9 +22,9 @@ const formatGewoonte = ({ gebruiker_id,gebruiker_naam, ...rest }) => ({
  * Get all `limit` gewoontes van gegeven gebruiker, throws on error.
  *
  * @param {object} pagination - Pagination options
- * @param {number} pagination.limit - Nr of transactions to return.
+ * @param {number} pagination.limit - Nr of gewoontes to return.
  * @param {string} gebruikersID - De id van de gebruiker van de gewoontes.
- * @param {number} pagination.offset - Nr of transactions to skip.
+ * @param {number} pagination.offset - Nr of gewoontes to skip.
  */
 const findAll = async ({
   limit,

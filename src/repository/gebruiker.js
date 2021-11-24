@@ -2,14 +2,22 @@ const uuid = require('uuid');
 const { tables, getKnex } = require('../data');
 const { getChildLogger } = require('../core/logging');
 
+const SELECT_COLUMNS = [
+  'id','naam'
+];
+
+const formatGebruiker = ({ ...rest }) => ({
+	...rest,
+});
+
 /**
  * Get all `limit` gebruikers, skip the first `offset`.
  *
  * @param {object} pagination - Pagination options
- * @param {number} pagination.limit - Nr of transactions to return.
- * @param {number} pagination.offset - Nr of transactions to skip.
+ * @param {number} pagination.limit - Nr of gebruikers to return.
+ * @param {number} pagination.offset - Nr of gebruikers to skip.
  */
-const findAll = ({
+const findAll = async ({
   limit,
   offset,
 }) => {
@@ -32,9 +40,9 @@ const findCount = async () => {
 /**
  * Find a gebruiker with the given id.
  *
- * @param {string} id - The id to search for.
+ * @param {string} id - The id van gebuiker to search for.
  */
-const findById = (id) => {
+const findById = async (id) => {
   return getKnex()(tables.gebruikers)
     .where('id', id)
     .first();
