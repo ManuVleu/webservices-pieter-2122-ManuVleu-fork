@@ -1,5 +1,6 @@
 const config = require('config');
 const knex = require('knex');
+const { join } = require('path');
 
 const { getChildLogger } = require('../core/logging');
 
@@ -49,6 +50,13 @@ const getKnexLogger = (logger, level) => (message) => {
           alternative,
         }),
       },
+      migrations: {
+        tableName: 'knex_meta',
+        directory: join('src','data','migrations'),
+      },
+      seeds: {
+        directory: join('src','data','seeds'),
+      },
     };
   
     knexInstance = knex(knexOptions);
@@ -70,6 +78,38 @@ const getKnexLogger = (logger, level) => (message) => {
       throw new Error('Could not initialize the data layer');
     }
   
+    let migrationsFailed = true;
+    try{
+      await knexInstance.migrate.latest();
+      migrationsFailed = false;
+    } catch(error){
+      logger.error('Error while migrating the database', {
+        error,
+      });
+    }
+
+    if(migrationsFailed){
+      try{
+        await knexInstance.migrate.down();
+      }catch(error){
+        logger.error('Error while undoing last migration',{
+          error,
+        });
+      }
+
+      throw new Error('Migrations failed');
+    }
+
+    if(isDevelopment){
+      try{
+        await knexInstance.seed.run();
+      }catch(error){
+        logger.error('Error while seeding database',{
+          error,
+        });
+      }
+    }
+
     logger.info('Succesfully connected to the database');
   
     return knexInstance;//Eigenlijk overbodig maja

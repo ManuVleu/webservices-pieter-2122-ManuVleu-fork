@@ -51,7 +51,7 @@ const create = async ({gebruikersnaam}) => {
  * @param {Date} [stockmarket.geldBedrijfB] - Geld geïnvesteerd in bedrijf B.
  * @param {string} [stockmarket.geldBedrijfC] - Geld geïnvesteerd in bedrijf C.
  */
-const updateById = (gebruikersID) => {
+const updateById = async (gebruikersID) => {
 	debugLog(`Updating stockmarket met gebruikersid ${gebruikersID}`, { gewoonteIDMeest, meestGeld, meestStockmarket,geld });
     
 	return stockmarketRepo.updateById(id, {
@@ -64,7 +64,7 @@ const updateById = (gebruikersID) => {
  *
  * @param {number} id - Id van de gebruiker om zijn stockmarket te deleten.
  */
-const deleteById = (id) => {
+const deleteById = async (id) => {
 	debugLog(`Verwijderen van stockmarket met id ${id}`);
 	await stockmarketRepo.deleteById(id);
 };

@@ -29,6 +29,7 @@ app.use(
 	koaCors({
 		origin: (ctx) => {
 			if (CORS_ORIGINS.indexOf(ctx.request.header.origin) !== -1) {
+				
 				return ctx.request.header.origin;
 			}
 			// Not a valid domain at this point, let's return the first valid as we should return a string
@@ -42,6 +43,8 @@ app.use(
 const logger = getLogger();
 
 app.use(bodyParser());
+
+
 
 installRest(app);
 

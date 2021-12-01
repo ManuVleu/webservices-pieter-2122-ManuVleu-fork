@@ -52,7 +52,7 @@ const create = async ({gebruikersnaam}) => {
  * @param {string} [stat.meestStockmarket] - Het meeste aantal winst dat de gebruiker ooit heeft behaald met de stockmarket.
  * @param {string} [stat.huidigAantalGeld] - Het huidig aantal geld dat de gebruiker bezit.
  */
-const updateById = (gebruikersID) => {
+const updateById = async (gebruikersID) => {
 	debugLog(`Updating stat met gebruikersid ${gebruikersID}`, { gewoonteIDMeest, meestGeld, meestStockmarket,geld });
     
 	return statRepo.updateById(id, {
@@ -65,7 +65,7 @@ const updateById = (gebruikersID) => {
  *
  * @param {number} id - Id van de gebruiker om zijn stats te deleten.
  */
-const deleteById = (id) => {
+const deleteById = async (id) => {
 	debugLog(`Verwijderen van stat met id ${id}`);
 	await statRepo.deleteById(id);
 };

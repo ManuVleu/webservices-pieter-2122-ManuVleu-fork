@@ -37,7 +37,7 @@ const debugLog = (message, meta = {}) => {
  * @param {object} gebruiker - De gebruiker.
  * @param {string} gebruiker.naam - De gebruikers naam.
  */
-const register = ({ naam }) => {
+const register = async ({ naam }) => {
 	getLogger().debug('Aanmaken nieuwe gebruiker', { naam });
   return gebruikerRepo.create({
     naam,
