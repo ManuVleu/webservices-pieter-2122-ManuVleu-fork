@@ -3,17 +3,45 @@ const { tables, getKnex } = require('../data');
 const { getChildLogger } = require('../core/logging');
 
 const SELECT_COLUMNS = [
-  `gebruikersID`,`${tables.gebruikers}.naam as gebruikersnaam`,
+  `gebruikersID`,
   'geldBedrijfA','geldBedrijfB','geldBedrijfC',
 ];
 
-const formatStockmarket = ({ gebruiker_id,gebruiker_naam, ...rest }) => ({
+const formatStockmarket = ({ ...rest }) => ({
 	...rest,
-	gebruiker: {
-		id: gebruiker_id,
-		naam: gebruiker_naam,
-	},
 });
+
+
+/**
+ * Get all `limit` stockmarket, throws on error.
+ *
+ * @param {object} pagination - Pagination options
+ * @param {number} pagination.limit - Nr of stockmarket to return.
+ * @param {number} pagination.offset - Nr of stockmarket to skip.
+ */
+ const findAll = async ({
+  limit,
+  offset,
+}) => {
+  const stockmarket = await getKnex()(tables.stockmarket)
+    .select(SELECT_COLUMNS)
+    .limit(limit)
+    .offset(offset)
+    .orderBy('gebruikersID', 'ASC');
+
+  return stockmarket.map(formatStockmarket);
+};
+
+/**
+ * Calculate the total number of stockmarket.
+ * 
+ */
+const findCount = async () => {
+  const [count] = await getKnex()(tables.stockmarket)
+    .count();
+
+  return count['count(*)'];
+};
 
 /**
  * Find a stockmarket van een gebruiker met id `gebruikersID`.
@@ -26,7 +54,7 @@ const findById = async (gebruikersID) => {
     .where(`${tables.gebruikers}.id`,gebruikersID)
     .join(tables.gebruikers, `${tables.stockmarket}.gebruikersID`, '=', `${tables.gebruikers}.id`)
   
-  return stockmarket && formatstockmarket(stockmarket);
+  return stockmarket && formatStockmarket(stockmarket);
 };
 
 /**
@@ -41,13 +69,13 @@ const create = async ({
   gebruikersID,
 }) => {
   try {
-    const startBedrag = 0;
+    const [geldBedrijfA,geldBedrijfB,geldBedrijfC] = [0,0,0];
     await getKnex()(tables.stockmarket)
       .insert({
         gebruikersID,
-        startBedrag,
-        startBedrag,
-        startBedrag,
+        geldBedrijfA,
+        geldBedrijfB,
+        geldBedrijfC,
       });
     return await findById(gebruikersID);
   } catch (error) {
@@ -82,8 +110,8 @@ const updateById = async (gebruikersID, {
         geldBedrijfB,
         geldBedrijfC,
       })
-    .where(`${tables.gebruikers}.id`,gebruikersID);
-    return await findById(id);
+    .where(`gebruikersID`,gebruikersID);
+    return await findById(gebruikersID);
   } catch (error) {
     const logger = getChildLogger('stockmarket-repo');
     logger.error('Error in updateById', {
@@ -104,7 +132,7 @@ const deleteById = async (gebruikersID) => {
   try {
     const rowsAffected = await getKnex()(tables.stockmarket)
       .delete()
-      .where(`${tables.gebruikers}.id`,gebruikersID);
+      .where(`gebruikersID`,gebruikersID);
     return rowsAffected > 0;
   } catch (error) {
     const logger = getChildLogger('stockmarket-repo');
@@ -116,6 +144,8 @@ const deleteById = async (gebruikersID) => {
 };
 
 module.exports = {
+  findAll,
+  findCount,
   findById,
   create,
   updateById,

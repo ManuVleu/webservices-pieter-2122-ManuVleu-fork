@@ -3,9 +3,33 @@ const { getChildLogger } = require('../core/logging');
 const statRepo = require('../repository/stats');
 const gebruikerService = require('../service/gebruiker');
 
+const DEFAULT_PAGINATION_LIMIT = config.get('pagination.limit');
+const DEFAULT_PAGINATION_OFFSET = config.get('pagination.offset');
+
 const debugLog = (message, meta = {}) => {
 	if (!this.logger) this.logger = getChildLogger('stat-service');
 	this.logger.debug(message, meta);
+};
+
+/**
+ * Get all `limit` stats, skip the first `offset`.
+ *
+ * @param {number} [limit] - Nr of stats to fetch.
+ * @param {number} [offset] - Nr of stats to skip.
+ */
+ const getAll = async (
+	limit = DEFAULT_PAGINATION_LIMIT,
+	offset = DEFAULT_PAGINATION_OFFSET,
+) => {
+	debugLog('Ophalen van alle stats',{ limit, offset });
+	const data = await statRepo.findAll({ limit, offset });
+	const count = await statRepo.findCount();
+	return {
+		data,
+		count,
+		limit,
+		offset
+	};
 };
 
 /**
@@ -30,33 +54,30 @@ const getById = async (gebruikersid) => {
  * @param {object} stat - The stat to create.
  * @param {number} stat.gebruikersid - de id van de gebruiker voor zijn stats.
  */
-const create = async ({gebruikersnaam}) => {
+const create = async ({gebruikersID}) => {
     
-	debugLog('Nieuwe stat gemaakt', { gebruikersnaam });
-	
-	// For now simply create a new user every time
-	const { id: gebruikerID } = await gebruikerService.register({ naam: gebruikersnaam });
+	debugLog('Nieuwe stat gemaakt', { gebruikersID });
 
 	return statRepo.create({
-		gebruikerID,
+		gebruikersID,
 	});
 };
 
 /**
  * Update an existing stat.
  *
- * @param {string} id - Id van de gebruiker om zijn stats up te daten.
  * @param {object} stat - The stat data to save.
- * @param {string} [stat.gewoonteIDMeest] - id van gewoonte die meest is voltooid.
- * @param {Date} [stat.meestGeld] - Het meest aantal geld dat de gebruiker ooit had.
- * @param {string} [stat.meestStockmarket] - Het meeste aantal winst dat de gebruiker ooit heeft behaald met de stockmarket.
- * @param {string} [stat.huidigAantalGeld] - Het huidig aantal geld dat de gebruiker bezit.
+ * @param {string} stat.gebruikersID - id van de gebruiker van de stats.
+ * @param {string} [stat.gewoonteIDMeestVoltooid] - id van gewoonte die meest is voltooid.
+ * @param {Date} [stat.meesteGeldOoit] - Het meest aantal geld dat de gebruiker ooit had.
+ * @param {string} [stat.meestWinstStockmarketOoit] - Het meeste aantal winst dat de gebruiker ooit heeft behaald met de stockmarket.
+ * @param {string} [stat.geld] - Het huidig aantal geld dat de gebruiker bezit.
  */
-const updateById = async (gebruikersID) => {
-	debugLog(`Updating stat met gebruikersid ${gebruikersID}`, { gewoonteIDMeest, meestGeld, meestStockmarket,geld });
+const updateById = async (gebruikersID, { gewoonteIDMeestVoltooid, meesteGeldOoit, meestWinstStockmarketOoit,geld }) => {
+	debugLog(`Updating stat met gebruikersid ${gebruikersID}`, { gewoonteIDMeestVoltooid, meesteGeldOoit, meestWinstStockmarketOoit,geld });
     
-	return statRepo.updateById(id, {
-		gewoonteIDMeest, meestGeld, meestStockmarket,geld,
+	return statRepo.updateById(gebruikersID, {
+		gewoonteIDMeestVoltooid, meesteGeldOoit, meestWinstStockmarketOoit,geld
 	});
 };
 
@@ -71,6 +92,7 @@ const deleteById = async (id) => {
 };
 
 module.exports = {
+	getAll,
 	getById,
 	create,
 	updateById,

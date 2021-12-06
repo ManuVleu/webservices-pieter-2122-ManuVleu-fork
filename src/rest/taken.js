@@ -2,7 +2,11 @@ const Router = require('@koa/router');
 const taakService = require('../service/taak');
 
 const getAllTaken = async (ctx) => {
-	ctx.body = await taakService.getAll();
+	const taken = await taakService.getAll(
+		ctx.query.limit && Number(ctx.query.limit),
+		ctx.query.offset && Number(ctx.query.offset),
+	);
+	ctx.body = taken;
 };
 
 const createTaak = async (ctx) => {

@@ -3,17 +3,44 @@ const { tables, getKnex } = require('../data');
 const { getChildLogger } = require('../core/logging');
 
 const SELECT_COLUMNS = [
-  `gebruikersID`,`${tables.gebruikers}.naam as gebruikersnaam`,
-  'statsIDMeestVoltooid','meesteGeldOoit','meestWinstStockmarketOoit','geld',
+  `gebruikersID`,
+  'gewoonteIDMeestVoltooid','meesteGeldOoit','meestWinstStockmarketOoit','geld',
 ];
 
-const formatStats = ({ gebruiker_id,gebruiker_naam, ...rest }) => ({
+const formatStats = ({ ...rest }) => ({
 	...rest,
-	gebruiker: {
-		id: gebruiker_id,
-		naam: gebruiker_naam,
-	},
 });
+
+/**
+ * Get all `limit` stats, throws on error.
+ *
+ * @param {object} pagination - Pagination options
+ * @param {number} pagination.limit - Nr of stats to return.
+ * @param {number} pagination.offset - Nr of stats to skip.
+ */
+ const findAll = async ({
+  limit,
+  offset,
+}) => {
+  const stats = await getKnex()(tables.stats)
+    .select(SELECT_COLUMNS)
+    .limit(limit)
+    .offset(offset)
+    .orderBy('gebruikersID', 'ASC');
+
+  return stats.map(formatStats);
+};
+
+/**
+ * Calculate the total number of stats.
+ * 
+ */
+const findCount = async () => {
+  const [count] = await getKnex()(tables.stats)
+    .count();
+
+  return count['count(*)'];
+};
 
 /**
  * Find a stats van een gebruiker met id `gebruikersID`.
@@ -26,6 +53,9 @@ const findById = async (gebruikersID) => {
     .where(`${tables.gebruikers}.id`,gebruikersID)
     .join(tables.gebruikers, `${tables.stats}.gebruikersID`, '=', `${tables.gebruikers}.id`)
   
+    if(!stats)
+      return 'Error: Stats met gegeven gebruikersID bestaat niet.'
+
   return stats && formatStats(stats);
 };
 
@@ -89,8 +119,8 @@ const updateById = async (gebruikersID, {
         meestWinstStockmarketOoit,
         geld,
       })
-    .where(`${tables.gebruikers}.id`,gebruikersID);
-    return await findById(id);
+    .where(`${tables.stats}.gebruikersID`,gebruikersID);
+    return await findById(gebruikersID);
   } catch (error) {
     const logger = getChildLogger('stats-repo');
     logger.error('Error in updateById', {
@@ -111,7 +141,7 @@ const deleteById = async (gebruikersID) => {
   try {
     const rowsAffected = await getKnex()(tables.stats)
       .delete()
-      .where(`${tables.gebruikers}.id`,gebruikersID);
+      .where(`gebruikersID`,gebruikersID);
     return rowsAffected > 0;
   } catch (error) {
     const logger = getChildLogger('stats-repo');
@@ -123,6 +153,8 @@ const deleteById = async (gebruikersID) => {
 };
 
 module.exports = {
+  findAll,
+  findCount,
   findById,
   create,
   updateById,

@@ -10,7 +10,7 @@ module.exports = {
                 gebruikersID: '1706481d-ae5a-4bcf-9ee3-20e71746e19c',
                 naam: 'Website afwerken',
                 startDatum: '2021-12-01',
-                puntenBijVoltooiing: 120,
+                geldBijVoltooiing: 120,
                 eindDatum: '2021-02-27',
             },
             {
@@ -18,7 +18,7 @@ module.exports = {
                 gebruikersID: '2529923f-1c94-4f0f-84d1-1444dc9c73e4',
                 naam: 'Lamp vervangen',
                 startDatum: '2021-11-10',
-                puntenBijVoltooiing: 80,
+                geldBijVoltooiing: 80,
                 eindDatum: '2021-03-15',
             },
         ]);

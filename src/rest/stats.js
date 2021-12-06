@@ -2,12 +2,16 @@ const Router = require('@koa/router');
 const statsService = require('../service/stats');
 
 const getAllStats = async (ctx) => {
-	ctx.body = await statsService.getAll();
+	const stats = await statsService.getAll(
+		ctx.query.limit && Number(ctx.query.limit),
+		ctx.query.offset && Number(ctx.query.offset),
+	);
+	ctx.body = stats;
 };
 
 const createStat = async (ctx) => {
 	const newStat = await statsService.create(ctx.request.body);
-	ctx.body = newStats;
+	ctx.body = newStat;
 };
 
 const getStatById = async (ctx) => {
@@ -33,7 +37,7 @@ module.exports = (app) => {
 		prefix: '/stats',
 	});
 
-	router.get('/', getAllStats);
+	router.get('/',getAllStats);
 	router.post('/', createStat);
 	router.get('/:id', getStatById);
 	router.put('/:id', updateStat);

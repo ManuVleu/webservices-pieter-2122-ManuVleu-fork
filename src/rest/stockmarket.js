@@ -1,8 +1,12 @@
 const Router = require('@koa/router');
 const stockmarketService = require('../service/stockmarket');
 
-const getAllStockmarkets = async (ctx) => {
-	ctx.body = await stockmarketService.getAll();
+const getAllStockmarket = async (ctx) => {
+	const stockmarket = await stockmarketService.getAll(
+		ctx.query.limit && Number(ctx.query.limit),
+		ctx.query.offset && Number(ctx.query.offset),
+	);
+	ctx.body = stockmarket;
 };
 
 const createStockmarket = async (ctx) => {
@@ -30,10 +34,10 @@ const deleteStockmarket = async (ctx) => {
  */
 module.exports = (app) => {
 	const router = new Router({
-		prefix: '/stockmarkets',
+		prefix: '/stockmarket',
 	});
 
-	router.get('/', getAllStockmarkets);
+	router.get('/',getAllStockmarket);
 	router.post('/', createStockmarket);
 	router.get('/:id', getStockmarketById);
 	router.put('/:id', updateStockmarket);

@@ -11,7 +11,7 @@ module.exports = {
 
             table.date('startDatum').notNullable();
 
-            table.integer('puntenBijVoltooiing');
+            table.integer('geldBijVoltooiing');
 
             table.date('eindDatum').notNullable();
 

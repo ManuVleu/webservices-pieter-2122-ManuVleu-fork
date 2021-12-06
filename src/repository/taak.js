@@ -3,70 +3,60 @@ const { tables, getKnex } = require('../data');
 const { getChildLogger } = require('../core/logging');
 
 const SELECT_COLUMNS = [
-  'taakID',`gebruikersID`,`${tables.gebruikers}.naam as gebruikersnaam`,
+  'taakID',`gebruikersID`,
   `${tables.taken}.naam as taakNaam`,
   `startDatum`,'eindDatum',`geldBijVoltooiing`,
 ];
 
-const formatTaak = ({ gebruiker_id,gebruiker_naam, ...rest }) => ({
+const formatTaak = ({ ...rest }) => ({
 	...rest,
-	gebruiker: {
-		id: gebruiker_id,
-		naam: gebruiker_naam,
-	},
 });
 
 
 /**
- * Get all `limit` taken van gegeven gebruiker, throws on error.
+ * Get all `limit` taken, throws on error.
  *
  * @param {object} pagination - Pagination options
  * @param {number} pagination.limit - Nr of taken to return.
- * @param {string} gebruikersID - De id van de gebruiker van de taken.
  * @param {number} pagination.offset - Nr of taken to skip.
  */
 const findAll = async ({
   limit,
   offset,
-  gebruikersID,
 }) => {
   const taken = await getKnex()(tables.taken)
     .select(SELECT_COLUMNS)
-    .where(`${tables.taken}.gebruikersID`,gebruikersID)
-    .join(tables.gebruikers, `${tables.taken}.gebruikersID`, '=', `${tables.gebruikers}.id`)
     .limit(limit)
     .offset(offset)
-    .orderBy('startDatum', 'ASC');
+    .orderBy('naam', 'ASC');
 
   return taken.map(formatTaak);
 };
 
 /**
- * Calculate the total number of taken per gebruiker.
- * @param {string} gebruikersID - De id van de gebruiker van de taken.
+ * Calculate the total number of taken.
  * 
  */
-const findCount = async (gebruikersID) => {
+const findCount = async () => {
   const [count] = await getKnex()(tables.taken)
-  .where(`${tables.taken}.gebruikersID`,gebruikersID)
     .count();
 
   return count['count(*)'];
 };
 
 /**
- * Find a taak van een gebruiker met id `gebruikersID` with the given `taakID` .
+ * Find a taak with the given `taakID`.
  *
- * @param {string} gebruikersID - Id of the gebruiker van de taken.
  * @param {string} taakID - Id of the taak to find.
  */
-const findById = async (gebruikersID,taakID) => {
+const findById = async (taakID) => {
   const taak = await getKnex()(tables.taken)
     .first(SELECT_COLUMNS)
     .where(`${tables.taken}.taakID`, taakID)
-    .andWhere(`${tables.gebruikers}.id`,gebruikersID)
-    .join(tables.gebruikers, `${tables.taken}.gebruikersID`, '=', `${tables.gebruikers}.id`)
   
+  if(!taak)
+    return 'Error: De taak met de gegeven taakID bestaat niet.';
+
   return taak && formatTaak(taak);
 };
 
@@ -82,25 +72,22 @@ const findById = async (gebruikersID,taakID) => {
  * @returns {Promise<object>} Created taak
  */
 const create = async ({
-  gebruikersID,
-  naam,
-  eindDatum,
-  geldBijVoltooiing,
+  gebruikersID,naam, geldBijVoltooiing,eindDatum
 }) => {
   try {
-    const id = uuid.v4();
+    const taakID = uuid.v4();
     const today = new Date();
     const startDatum = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
     await getKnex()(tables.taken)
       .insert({
-        id,
+        taakID,
         gebruikersID,
         naam,
         startDatum,
-        eindDatum,
         geldBijVoltooiing,
+        eindDatum,
       });
-    return await findById(gebruikersID,id);
+    return await findById(taakID);
   } catch (error) {
     const logger = getChildLogger('taken-repo');
     logger.error('Error in create', {
@@ -114,13 +101,14 @@ const create = async ({
  * Update an existing taak.
  *
  * @param {object} taak - The taak to create.
+ * @param {string} taak.taakID - The id of the taak.
  * @param {string} taak.naam - Naam van de taak.
  * @param {number} taak.geldBijVoltooiing - Hoeveelheid geld je krijgt als je de taak voltooid.
  * @param {Date} taak.eindDatum - De datum tot wanneer je tijd hebt om de taak te voltooien.
  *
  * @returns {Promise<object>} Updated taak
  */
-const updateById = async (gebruikersID,id, {
+const updateById = async (taakID, {
   naam,
   geldBijVoltooiing,
   eindDatum,
@@ -133,8 +121,7 @@ const updateById = async (gebruikersID,id, {
         eindDatum,
       })
       .where(`${tables.taken}.taakID`, taakID)
-    .andWhere(`${tables.gebruikers}.id`,gebruikersID);
-    return await findById(id);
+    return await findById(taakID);
   } catch (error) {
     const logger = getChildLogger('taken-repo');
     logger.error('Error in updateById', {
@@ -148,16 +135,14 @@ const updateById = async (gebruikersID,id, {
  * Delete a taak with the given `id`.
  *
  * @param {string} id - Id of the taak to delete.
- * @param {string} gebruikersID - Id of the gebruiker van de taak to delete.
  *
  * @returns {Promise<boolean>} Whether the taak was deleted.
  */
-const deleteById = async (gebruikersID,id) => {
+const deleteById = async (id) => {
   try {
     const rowsAffected = await getKnex()(tables.taken)
       .delete()
-      .where(`${tables.taken}.id`, id)
-      .andWhere(`${tables.gebruikers}.id`,gebruikersID);
+      .where(`${tables.taken}.taakID`, id)
     return rowsAffected > 0;
   } catch (error) {
     const logger = getChildLogger('taken-repo');

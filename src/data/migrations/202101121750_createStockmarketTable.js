@@ -2,7 +2,7 @@ const { tables } = require('..');
 
 module.exports = {
     up: async (knex) => {
-        await knex.schemas.createTable(tables.stockmarket, (table) => {
+        await knex.schema.createTable(tables.stockmarket, (table) => {
             table.uuid('gebruikersID').primary();
 
             table.integer('geldBedrijfA');
@@ -13,5 +13,8 @@ module.exports = {
 
             table.foreign('gebruikersID','fk_stockmarket_gebruiker').references(`${tables.gebruikers}.id`).onDelete('CASCADE');
         });
+    },
+    down: (knex) => {
+        return knex.schema.dropTableIfExists(tables.stats);
     },
 };

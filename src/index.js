@@ -45,7 +45,6 @@ const logger = getLogger();
 app.use(bodyParser());
 
 
-
 installRest(app);
 
 app.listen(9000);

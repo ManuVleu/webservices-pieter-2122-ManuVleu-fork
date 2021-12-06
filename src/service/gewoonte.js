@@ -52,45 +52,38 @@ const getById = async (id) => {
  * Create a new gewoonte.
  *
  * @param {object} gewoonte - The gewoonte to create.
+ * @param {string} gewoonte.gebruikersID - De id van de gebruiker van de gewoonte.
  * @param {string} gewoonte.naam - Naam van de gewoonte.
- * @param {string} gewoonte.soort - Soort van gewoonte, kan alleen 'Dagelijks','Wekelijks' of 'Maandelijks' zijn.
- * @param {number} gewoonte.geld - geld die de gewoonte opbrengt als je het voltooid.
- * @param {string} gewoonte.gebruikersnaam - Naam van de gebruiker van de gewoonte.
+ * @param {string} gewoonte.soortHerhaling - Soort van gewoonte, kan alleen 'Dagelijks','Wekelijks' of 'Maandelijks' zijn.
+ * @param {number} gewoonte.geldBijVoltooiing - geld die de gewoonte opbrengt als je het voltooid.
  */
-const create = async ({ naam, soort, geld,gebruikersnaam }) => {
+const create = async ({ gebruikersID,naam, geldBijVoltooiing, soortHerhaling }) => {
 	//in repo
     //const today = new Date();
     //const date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-	debugLog('Nieuwe gewoonte aan het maken', {naam, soort, geld});
-	
-	// For now simply create a new user every time
-	const { id: gebruikerID } = await gebruikerService.register({ naam: gebruikersnaam });
+	debugLog('Nieuwe gewoonte aan het maken', {gebruikersID,naam, geldBijVoltooiing, soortHerhaling});
 
 	return gewoonteRepo.create({
-		naam, soort, geld,gebruikerID,
+		gebruikersID,naam, geldBijVoltooiing, soortHerhaling
 	});
 };
 
 /**
  * Update an existing gewoonte.
  *
- * @param {string} id - Id of the transaction to update.
  * @param {object} gewoonte - The gewoonte to create.
- * @param {string} [gewoonte.naam] - naam van de gewoonte.
- * @param {string} [gewoonte.soort] - Soort van gewoonte, kan alleen 'Dagelijks','Wekelijks' of 'Maandelijks' zijn.
- * @param {number} [gewoonte.geld] - geld die de gewoonte opbrengt als je het voltooid.
-  * @param {string} [gewoonte.gebruikersnaam] - Naam van de gebruiker van de gewoonte.
+ * @param {string} gewoonte.gewoonteID - De id van de gewoonte.
+ * @param {string} gewoonte.naam - Naam van de gewoonte.
+ * @param {string} gewoonte.soortHerhaling - Soort van gewoonte, kan alleen 'Dagelijks','Wekelijks' of 'Maandelijks' zijn.
+ * @param {number} gewoonte.geldBijVoltooiing - geld die de gewoonte opbrengt als je het voltooid.
+ * @param {number} gewoonte.aantalKeerVoltooid - Aantal keer gewoonte is voltooid.
+ * @param {date} gewoonte.laatsteKeerVoltooid - Datum wanneer gewoonte laatste keer is voltooid.
  */
-const updateById = async (id, { naam, soort, geld }) => {
-	debugLog(`Updating gewoonte met id ${id}`, { naam, soort, geld, gebruikersnaam });
-    
-	const {id: gebruikerID } = await gebruikerService.register({naam: gebruikersnaam});
+const updateById = async (gewoonteID, { naam,geldBijVoltooiing,aantalKeerVoltooid,laatsteKeerVoltooid, soortHerhaling  }) => {
+	debugLog(`Updating gewoonte met id ${gewoonteID}`, { naam,geldBijVoltooiing,aantalKeerVoltooid,laatsteKeerVoltooid, soortHerhaling });
 
-	return gewoonteRepo.updateById(id, {
-		naam,
-		soort,
-		geld,
-		gebruikerID
+	return gewoonteRepo.updateById(gewoonteID, {
+		naam,geldBijVoltooiing,aantalKeerVoltooid,laatsteKeerVoltooid, soortHerhaling
 	});
 
 

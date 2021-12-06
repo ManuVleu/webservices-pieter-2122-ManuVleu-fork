@@ -1,3 +1,4 @@
+/*
 let GEBRUIKERS = [
     {
         id: 1,
@@ -74,3 +75,4 @@ function getDateNow(){
      + (new Date()).getDate().toString() + ' '+(new Date()).getHours().toString()+':'+(new Date()).getMinutes().toString()
      +':00');
 }
+*/

@@ -3,9 +3,33 @@ const { getChildLogger } = require('../core/logging');
 const stockmarketRepo = require('../repository/stockmarket');
 const gebruikerService = require('../service/gebruiker');
 
+const DEFAULT_PAGINATION_LIMIT = config.get('pagination.limit');
+const DEFAULT_PAGINATION_OFFSET = config.get('pagination.offset');
+
 const debugLog = (message, meta = {}) => {
 	if (!this.logger) this.logger = getChildLogger('stockmarket-service');
 	this.logger.debug(message, meta);
+};
+
+/**
+ * Get all `limit` stockmarket, skip the first `offset`.
+ *
+ * @param {number} [limit] - Nr of stockmarket to fetch.
+ * @param {number} [offset] - Nr of stockmarket to skip.
+ */
+ const getAll = async (
+	limit = DEFAULT_PAGINATION_LIMIT,
+	offset = DEFAULT_PAGINATION_OFFSET,
+) => {
+	debugLog('Ophalen van alle stockmarket',{ limit, offset });
+	const data = await stockmarketRepo.findAll({ limit, offset });
+	const count = await stockmarketRepo.findCount();
+	return {
+		data,
+		count,
+		limit,
+		offset
+	};
 };
 
 /**
@@ -30,15 +54,13 @@ const getById = async (gebruikersid) => {
  * @param {object} stockmarket - The stockmarket to create.
  * @param {number} stockmarket.gebruikersid - de id van de gebruiker voor zijn stockmarket.
  */
-const create = async ({gebruikersnaam}) => {
+const create = async ({gebruikersID}) => {
     
-	debugLog('Nieuwe stockmarket gemaakt', { gebruikersnaam });
+	debugLog('Nieuwe stockmarket gemaakt', { gebruikersID });
 	
-	// For now simply create a new user every time
-	const { id: gebruikerID } = await gebruikerService.register({ naam: gebruikersnaam });
 
 	return stockmarketRepo.create({
-		gebruikerID,
+		gebruikersID,
 	});
 };
 
@@ -51,10 +73,10 @@ const create = async ({gebruikersnaam}) => {
  * @param {Date} [stockmarket.geldBedrijfB] - Geld geïnvesteerd in bedrijf B.
  * @param {string} [stockmarket.geldBedrijfC] - Geld geïnvesteerd in bedrijf C.
  */
-const updateById = async (gebruikersID) => {
-	debugLog(`Updating stockmarket met gebruikersid ${gebruikersID}`, { gewoonteIDMeest, meestGeld, meestStockmarket,geld });
+const updateById = async (gebruikersID, {geldBedrijfA,geldBedrijfB,geldBedrijfC}) => {
+	debugLog(`Updating stockmarket met gebruikersid ${gebruikersID}`, { geldBedrijfA,geldBedrijfB,geldBedrijfC });
     
-	return stockmarketRepo.updateById(id, {
+	return stockmarketRepo.updateById(gebruikersID, {
 		geldBedrijfA,geldBedrijfB,geldBedrijfC,
 	});
 };
@@ -70,6 +92,7 @@ const deleteById = async (id) => {
 };
 
 module.exports = {
+	getAll,
 	getById,
 	create,
 	updateById,

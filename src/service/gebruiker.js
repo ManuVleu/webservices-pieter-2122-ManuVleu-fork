@@ -22,29 +22,52 @@ const debugLog = (message, meta = {}) => {
 ) => {
 	debugLog('Fetching all gebruikers', { limit, offset });
 	const data = await gebruikerRepo.findAll({ limit, offset });
-	const count = await gebruikerRepo.findCount();
+	const totalCount = await gebruikerRepo.findCount();
 	return {
 		data,
-		count,
+		count: totalCount,
 		limit,
 		offset
 	};
 };
 
 /**
+ * 
+ * @param {object} gebruiker - De gebruiker. 
+ * @param {string} gebruiker.id - De id van de gebruiker
+ */
+const getById = async ( id ) => {
+	debugLog('Fetching gebruiker met id ',{id});
+	return await gebruikerRepo.findById(id);
+}
+
+/**
  * Registreren nieuwe gebruiker
  *
  * @param {object} gebruiker - De gebruiker.
  * @param {string} gebruiker.naam - De gebruikers naam.
+ * @param {string} gebruiker.wachtwoord - Het wachtwoord van de gebruiker.
  */
-const register = async ({ naam }) => {
-	getLogger().debug('Aanmaken nieuwe gebruiker', { naam });
+const register = async ({ naam,wachtwoord }) => {
+	debugLog('Aanmaken nieuwe gebruiker', { naam,wachtwoord });
   return gebruikerRepo.create({
-    naam,
+    naam,wachtwoord
   });
+};
+
+/**
+ * Delete the gebruiker with the given `id`.
+ *
+ * @param {number} id - Id of the gebruiker to delete.
+ */
+ const deleteById = async (id) => {
+	debugLog(`Verwijderen van gebruiker met id ${id}`);
+	await gebruikerRepo.deleteById(id);
 };
 
 module.exports = {
 	getAll,
+	getById,
 	register,
+	deleteById,
 };

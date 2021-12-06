@@ -1,9 +1,9 @@
 const uuid = require('uuid');
-const { tables, getKnex } = require('../data');
+const { tables, getKnex } = require('../data/index');
 const { getChildLogger } = require('../core/logging');
 
 const SELECT_COLUMNS = [
-  'id','naam'
+  'id','naam','wachtwoord'
 ];
 
 const formatGebruiker = ({ ...rest }) => ({
@@ -43,9 +43,14 @@ const findCount = async () => {
  * @param {string} id - The id van gebuiker to search for.
  */
 const findById = async (id) => {
-  return getKnex()(tables.gebruikers)
+  const gebruiker = await getKnex()(tables.gebruikers)
     .where('id', id)
     .first();
+
+    if(!gebruiker)
+      return 'Error: Gebruiker met gegeven ID bestaat niet.'
+
+    return gebruiker;
 };
 
 /**
@@ -53,9 +58,10 @@ const findById = async (id) => {
  *
  * @param {object} gebruiker - gebruiker to create.
  * @param {string} gebruiker.naam - naam of the gebruiker.
+ * @param {string} gebruiker.wachtwoord - Wachtwoord of the gebruiker.
  */
 const create = async ({
-  naam,
+  naam,wachtwoord
 }) => {
   try {
     const id = uuid.v4();
@@ -63,38 +69,12 @@ const create = async ({
       .insert({
         id,
         naam,
-        //wachtwoord later
+        wachtwoord,
       });
     return await findById(id);
   } catch (error) {
     const logger = getChildLogger('gebruikers-repo');
     logger.error('Error in create', {
-      error,
-    });
-    throw error;
-  }
-};
-
-/**
- * Update a gebruiker with the given `id`.
- *
- * @param {string} id - Id of the gebruiker to update.
- * @param {object} gebruiker - gebruiker to save.
- * @param {string} gebruiker.naam - naam of the gebruiker.
- */
-const updateById = async (id, {
-  naam,
-}) => {
-  try {
-    await getKnex()(tables.gebruikers)
-      .update({
-        naam,
-      })
-      .where('id', id);
-    return await findById(id);
-  } catch (error) {
-    const logger = getChildLogger('gebruikers-repo');
-    logger.error('Error in updateById', {
       error,
     });
     throw error;
@@ -126,6 +106,5 @@ module.exports = {
   findCount,
   findById,
   create,
-  updateById,
   deleteById,
 };

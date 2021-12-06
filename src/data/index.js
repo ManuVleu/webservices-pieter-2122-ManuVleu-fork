@@ -88,17 +88,19 @@ const getKnexLogger = (logger, level) => (message) => {
       });
     }
 
-    if(migrationsFailed){
-      try{
-        await knexInstance.migrate.down();
-      }catch(error){
-        logger.error('Error while undoing last migration',{
-          error,
-        });
-      }
-
-      throw new Error('Migrations failed');
+    // Undo last migration if something failed
+  if (migrationsFailed) {
+    try {
+      await knexInstance.migrate.down();
+    } catch (error) {
+      logger.error('Error while undoing last migration', {
+        error,
+      });
     }
+
+    // No point in starting the server
+    throw new Error('Migrations failed');
+  }
 
     if(isDevelopment){
       try{

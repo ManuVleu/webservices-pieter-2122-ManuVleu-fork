@@ -52,45 +52,37 @@ const getById = async (id) => {
  * Create a new taak.
  *
  * @param {object} taak - The taak to create.
+ * @param {string} taak.gebruikersID - The id van de gebruiker van de taak.
  * @param {string} taak.naam - Naam van de taak.
  * @param {Date} taak.eindDatum - De taak moet voltooid worden voor deze datum.
- * @param {number} taak.geld - geld die de taak opbrengt als je het voltooid.
- * @param {string} taak.gebruikersnaam - Naam van de gebruiker van de taak.
+ * @param {number} taak.geldBijVoltooiing - geld die de taak opbrengt als je het voltooid.
  */
-const create = async ({ naam, eindDatum, geld,gebruikersnaam }) => {
+const create = async ({ gebruikersID,naam, geldBijVoltooiing,eindDatum }) => {
 	//in repo
     //const today = new Date();
     //const date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-	debugLog('Nieuwe taak aan het maken', {naam, eindDatum, geld});
-	
-	// For now simply create a new user every time
-	const { id: gebruikerID } = await gebruikerService.register({ naam: gebruikersnaam });
+	debugLog('Nieuwe taak aan het maken', {gebruikersID,naam, geldBijVoltooiing,eindDatum});
+
 
 	return taakRepo.create({
-		naam, eindDatum, geld,gebruikerID,
+		gebruikersID,naam, geldBijVoltooiing,eindDatum
 	});
 };
 
 /**
  * Update an existing taak.
  *
- * @param {string} id - Id of the transaction to update.
  * @param {object} taak - The taak to create.
- * @param {string} [taak.naam] - naam van de taak.
- * @param {string} [taak.eindDatum] - De taak moet voltooid worden voor deze datum.
- * @param {number} [taak.geld] - geld die de taak opbrengt als je het voltooid.
-  * @param {string} [taak.gebruikersnaam] - Naam van de gebruiker van de taak.
+ * @param {string} taak.taakID - The id van de taak.
+ * @param {string} [taak.naam] - Naam van de taak.
+ * @param {Date} [taak.eindDatum] - De taak moet voltooid worden voor deze datum.
+ * @param {number} [taak.geldBijVoltooiing] - geld die de taak opbrengt als je het voltooid.
  */
-const updateById = async (id, { naam, eindDatum, geld }) => {
-	debugLog(`Updating taak met id ${id}`, { naam, eindDatum, geld, gebruikersnaam });
-    
-	const {id: gebruikerID } = await gebruikerService.register({naam: gebruikersnaam});
+const updateById = async (taakID, { naam,geldBijVoltooiing, eindDatum  }) => {
+	debugLog(`Updating taak met id ${taakID}`, { naam,geldBijVoltooiing, eindDatum });
 
-	return taakRepo.updateById(id, {
-		naam,
-		eindDatum,
-		geld,
-		gebruikerID
+	return taakRepo.updateById(taakID, {
+		naam,geldBijVoltooiing, eindDatum
 	});
 
 
