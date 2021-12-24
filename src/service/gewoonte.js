@@ -86,7 +86,6 @@ const updateById = async (gewoonteID, { naam,geldBijVoltooiing,aantalKeerVoltooi
 		naam,geldBijVoltooiing,aantalKeerVoltooid,laatsteKeerVoltooid, soortHerhaling
 	});
 
-
 };
 
 /**

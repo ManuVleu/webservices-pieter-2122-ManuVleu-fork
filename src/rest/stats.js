@@ -1,5 +1,9 @@
 const Router = require('@koa/router');
+const Joi = require('joi');
 const statsService = require('../service/stats');
+const { requireAuthentication } = require('../core/auth');
+
+const validate = require('./validation');
 
 const getAllStats = async (ctx) => {
 	const stats = await statsService.getAll(
@@ -8,24 +12,65 @@ const getAllStats = async (ctx) => {
 	);
 	ctx.body = stats;
 };
+getAllStats.validationScheme = {
+	query: Joi.object({
+
+		limit: Joi.number().integer().positive().max(1000).optional(),
+		offset: Joi.number().integer().min(0).optional(),
+	}).and('limit','offset'),
+};
 
 const createStat = async (ctx) => {
-	const newStat = await statsService.create(ctx.request.body);
+	const newStat = await statsService.create({
+		...ctx.request.body,
+		gebruikersID: ctx.state.session.gebruikersID,
+		date: new Date(ctx.request.body.date),
+	});
 	ctx.body = newStat;
+	ctx.status = 201;
 };
+createStat.validationScheme = {
+	body: {
+		amount: Joi.number()
+	}
+}
 
 const getStatById = async (ctx) => {
 	ctx.body = await statsService.getById(ctx.params.id);
 };
+getStatById.validationScheme = {
+	params: {
+		id: Joi.string().uuid(),
+	},
+};
 
 const updateStat = async (ctx) => {
-	ctx.body = await statsService.updateById(ctx.params.id, ctx.request.body);
+	ctx.body = await statsService.updateById(ctx.params.id, {
+		...ctx.request.body,
+		gebruikersID: ctx.state.session.gebruikersID,
+	});
 };
+updateStat.validationScheme = {
+	params: {
+		id: Joi.string().uuid(),
+	},
+	body: {
+		gewoonteIDMeestVoltooid: Joi.string().uuid(),
+		meesteGeldOoit: Joi.number().min(0),
+		meestWinstStockmarketOoit: Joi.number().min(0),
+		geld: Joi.number().min(0),
+	}
+}
 
 const deleteStat = async (ctx) => {
 	await statsService.deleteById(ctx.params.id);
 	ctx.status = 204;
 };
+deleteStat.validationScheme = {
+	params: {
+		id: Joi.string().uuid(),
+	}
+}
 
 /**
  * Install transaction routes in the given router.
@@ -37,11 +82,11 @@ module.exports = (app) => {
 		prefix: '/stats',
 	});
 
-	router.get('/',getAllStats);
-	router.post('/', createStat);
-	router.get('/:id', getStatById);
-	router.put('/:id', updateStat);
-	router.delete('/:id', deleteStat);
+	router.get('/', requireAuthentication, validate(getAllStats.validationScheme), getAllStats);
+	router.post('/', requireAuthentication, validate(createStat.validationScheme), createStat);
+	router.get('/:id', requireAuthentication, validate(getStatById.validationScheme), getStatById);
+	router.put('/:id', requireAuthentication, validate(updateStat.validationScheme), updateStat);
+	router.delete('/:id', requireAuthentication, validate(deleteStat.validationScheme), deleteStat);
 
 	app.use(router.routes()).use(router.allowedMethods());
 };

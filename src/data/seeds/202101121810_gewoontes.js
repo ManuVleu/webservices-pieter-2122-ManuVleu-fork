@@ -18,7 +18,7 @@ module.exports = {
             {
                 gewoonteID: '8a307ca2-b393-4847-80b6-fa9f22e6e7a9',
                 gebruikersID: '1706481d-ae5a-4bcf-9ee3-20e71746e19c',
-                naam: 'Lopen',
+                naam: '5km lopen',
                 startDatum: '2021-11-08',
                 geldBijVoltooiing: 40,
                 aantalKeerVoltooid: 2,

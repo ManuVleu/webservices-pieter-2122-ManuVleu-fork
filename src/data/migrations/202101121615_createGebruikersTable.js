@@ -6,11 +6,9 @@ module.exports = {
             table.uuid('id').primary();
 
             table.string('naam',255).notNullable();
-
-            table.string('wachtwoord',255).notNullable();
         });
     },
     down: (knex) => {
         return knex.schema.dropTableIfExists(tables.gebruikers);
-    },
+    },                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
 };

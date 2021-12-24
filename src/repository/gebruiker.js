@@ -54,6 +54,17 @@ const findById = async (id) => {
 };
 
 /**
+ * Find a gebruiker with the given naam.
+ *
+ * @param {string} naam - The naam to search for.
+ */
+ const findByNaam = (naam) => {
+  return getKnex()(tables.gebruikers)
+    .where('naam', naam)
+    .first();
+};
+
+/**
  * Create a new gebruiker with the given `naam`.
  *
  * @param {object} gebruiker - gebruiker to create.
@@ -61,7 +72,7 @@ const findById = async (id) => {
  * @param {string} gebruiker.wachtwoord - Wachtwoord of the gebruiker.
  */
 const create = async ({
-  naam,wachtwoord
+  naam,wachtwoord,roles
 }) => {
   try {
     const id = uuid.v4();
@@ -70,6 +81,7 @@ const create = async ({
         id,
         naam,
         wachtwoord,
+        roles: JSON.stringify(roles),
       });
     return await findById(id);
   } catch (error) {
@@ -105,6 +117,7 @@ module.exports = {
   findAll,
   findCount,
   findById,
+  findByNaam,
   create,
   deleteById,
 };

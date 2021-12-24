@@ -1,5 +1,22 @@
 const Router = require('@koa/router');
+const Joi = require('joi');
 const gebruikerService = require('../service/gebruiker');
+const Role = require('../core/roles');
+const { requireAuthentication, makeRequireRole } = require('../core/auth');
+
+const validate = require('./validation');
+
+const login = async (ctx) => {
+	const { naam, wachtwoord } = ctx.request.body;
+	const session = await gebruikerService.login(naam,wachtwoord);
+	ctx.body = session;
+};
+login.validationScheme = {
+	body: {
+		naam: Joi.string().max(255),
+		wachtwoord: Joi.string().min(2).max(25),
+	},
+};
 
 const getAllGebruikers = async (ctx) => {
 	const gebruikers = await gebruikerService.getAll(
@@ -8,19 +25,42 @@ const getAllGebruikers = async (ctx) => {
 	);
 	ctx.body = gebruikers;
 };
+getAllGebruikers.validationScheme = {
+	query: Joi.object({
+		limit: Joi.number().integer().positive().max(1000).optional(),
+		offset: Joi.number().integer().min(0).optional(),
+	}).and('limit','offset'),
+};
 
-const createGebruiker = async (ctx) => {
-	const newGebruiker = await gebruikerService.register(ctx.request.body);
-	ctx.body = newGebruiker;
+const register = async (ctx) => {
+	const session = await gebruikerService.register(ctx.request.body);
+	ctx.body = session;
+};
+register.validationScheme = {
+	body: {
+		naam: Joi.string().max(255),
+		wachtwoord: Joi.string().min(8).max(30),
+	},
 };
 
 const getGebruikerById = async (ctx) => {
-	ctx.body = await gebruikerService.getById(ctx.params.id);
+	const gebruiker = await gebruikerService.getById(ctx.params.id);
+	ctx.body = gebruiker;
+};
+getGebruikerById.validationScheme = {
+	params: {
+		id: Joi.string().uuid(),
+	},
 };
 
 const deleteGebruiker = async (ctx) => {
 	await gebruikerService.deleteById(ctx.params.id);
 	ctx.status = 204;
+};
+deleteGebruiker.validationScheme = {
+	params: {
+		id: Joi.string().uuid(),
+	},
 };
 
 /**
@@ -33,10 +73,14 @@ module.exports = function installGebruikerRouter(app) {
 		prefix: '/gebruikers',
 	});
 
-	router.get('/', getAllGebruikers);
-	router.post('/', createGebruiker);
-	router.get('/:id', getGebruikerById);
-	router.delete('/:id', deleteGebruiker);
+	router.post('/login',validate(login.validationScheme),login);
+	router.post('/register',validate(register.validationScheme),register);
+
+	const requireAdmin = makeRequireRole(Role.ADMIN);
+
+	router.get('/',requireAuthentication,requireAdmin,validate(getAllGebruikers.validationScheme), getAllGebruikers);
+	router.get('/:id',requireAuthentication, validate(getGebruikerById.validationScheme), getGebruikerById);
+	router.delete('/:id',requireAuthentication, validate(deleteGebruiker.validationScheme), deleteGebruiker);
 
 	app.use(router.routes()).use(router.allowedMethods());
 };
