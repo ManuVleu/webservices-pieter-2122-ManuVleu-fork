@@ -14,7 +14,7 @@ module.exports = {
             },
             {
                 gebruikersID: '2529923f-1c94-4f0f-84d1-1444dc9c73e4',
-                gewoonteIDMeestVoltooid: '',
+                gewoonteIDMeestVoltooid: '4edfc4a4-9f15-4952-b657-69c55330a49e',
                 meesteGeldOoit: 0,
                 meestWinstStockmarketOoit: 0,
                 geld: 0,

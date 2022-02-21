@@ -1,6 +1,8 @@
 {
   "scripts": {
-    "start": "npx env-cmd nodemon src/index.js"
+    "start": "npx env-cmd nodemon src/index.js",
+    "test": "jest",
+    "test:coverage": "yarn test --coverage"
   },
   "dependencies": {
     "@koa/cors": "^3.1.0",
@@ -19,6 +21,7 @@
     "mysql": "^2.18.1",
     "mysql2": "^2.3.3",
     "node-emoji": "^1.11.0",
+    "pg": "^8.7.3",
     "serialize-error": "8.1.0",
     "source-map-loader": "^3.0.0",
     "uuid": "^8.3.2",
@@ -26,6 +29,8 @@
   },
   "devDependencies": {
     "@types/node": "^16.11.7",
+    "jest": "^27.5.1",
+    "jest-each": "^27.5.1",
     "nodemon": "^2.0.14"
   }
 }

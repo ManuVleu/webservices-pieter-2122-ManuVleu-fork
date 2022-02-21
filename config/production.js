@@ -11,12 +11,12 @@ module.exports = {
 },
 
   database: {
-      client: 'mysql2',
+      client: 'pg',
       host: 'localhost',
-      port: 3306,
+      port: 5432,
       name: 'habits',
-      username: 'root',
-      password: 'root',
+      username: 'postgres',
+      password: '',
   },
   pagination: {
       limit: 100,

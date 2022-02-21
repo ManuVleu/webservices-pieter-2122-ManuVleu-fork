@@ -3,6 +3,7 @@ const knex = require('knex');
 const { join } = require('path');
 
 const { getChildLogger } = require('../core/logging');
+const { logger } = require('../service/gebruiker');
 
 const NODE_ENV = config.get('env');
 const isDevelopment = NODE_ENV === 'development';
@@ -64,7 +65,9 @@ const getKnexLogger = (logger, level) => (message) => {
     // Check the connection, create the database and then reconnect
     try {
       await knexInstance.raw('SELECT 1+1 AS result');
-      await knexInstance.raw(`CREATE DATABASE IF NOT EXISTS ${DATABASE_NAME}`);
+      await knexInstance.raw(`DROP DATABASE if exists habits`);
+      await knexInstance.raw(`CREATE DATABASE habits`)
+
   
       // We need to update the Knex configuration and reconnect to use the created database by default
       // USE ... would not work because a pool of connections is used
@@ -77,6 +80,7 @@ const getKnexLogger = (logger, level) => (message) => {
       logger.error(error.message, { error });
       throw new Error('Could not initialize the data layer');
     }
+    
   
     let migrationsFailed = true;
     try{
