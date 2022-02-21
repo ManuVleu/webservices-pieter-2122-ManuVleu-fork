@@ -1,7 +1,6 @@
 const { request } = require("http");
 const { url } = require("inspector");
 const { default: knex } = require("knex");
-const { hasUncaughtExceptionCaptureCallback } = require("process");
 const { tables } = require("../../src/data");
 
 const data = {
@@ -34,60 +33,128 @@ const data = {
         aantalKeerVoltooid: 0,
         laatsteKeerVoltooid: '2021-11-26',
         soortHerhaling: 'Maandelijks'
-    }],
-    gebruikers: [
-        {
-            id: '1706481d-ae5a-4bcf-9ee3-20e71746e19c',
-            naam: 'admin',
-            wachtwoord: '123',
-            roles: JSON.stringify([Role.ADMIN, Role.GEBRUIKER]),
-        },
-        {
-            id: '2529923f-1c94-4f0f-84d1-1444dc9c73e4',
-            naam: 'Manu',
-            wachtwoord: '123',
-            roles: JSON.stringify([Role.GEBRUIKER]),
-        },
-    ]
+    }]
 };
 
 describe('gewoontes',() => {
     describe('GET /api/gewoontes',() => {
         it('should return 200 and list of gewoontes',async () => {
-            const response = await request.get(`${url}?limit=2&offset=1`);
+            const response = await request.get(`${url}?limit=3`);
             expect(response.status).toBe(200);
-            expect(response.body.limit).toBe(2);
-            expect(response.body.offset).toBe(1);
+            expect(response.body.limit).toBe(3);
 		    expect(response.body.data.length).toBe(3);
             expect(response.body.data[0]).toEqual(
                 data.gewoontes
             );
         });
+
+        it('should return 200 and a specific gewoonte',async () => {
+            const response = await request.get(`${url}/360e6bbd-5ed4-466e-97f1-3ee356c277b7`);
+            expect(response.status).toBe(200)
+            expect(response.data.length).toBe(1);
+            expect(response.body.data[0]).toEqual(
+                data.gewoontes[0]
+            );
+        })
     });
 
     describe('POST /api/gewoontes',() => {
         const gewoontesToDelete = []
-        const gebruikersToDelete = []
-
-        beforeAll(async () => {
-            await knex(tables.gebruikers).insert(data.gebruikers);
-        });
 
         afterAll(async () => {
             await knex(tables.gewoontes)
-            .whereIn('id',gewoontesToDelete)
-            .delete();
-
-            await knex(tables.gebruikers)
-            .whereIn('id',gebruikersToDelete)
+            .whereIn('gewoonteID',gewoontesToDelete)
             .delete();
         })
 
         it('should return 201 and return created gewoonte',async () =>{
             const response = await request.post(url)
                 .send({
-                    
+                        gebruikersID: '9dd24a11-6fe3-4d3c-8e25-f311b1f4afe5',
+                        naam: 'TestGewoonte',
+                        geldBijVoltooiing: 60,
+                        soortHerhaling: 'Wekelijks',
                 });
+            
+            expect(response.status).toBe(201);
+            expect(response.body.gewoonteID).toBeTruthy()
+            expect(response.body.gebruikersID).toBe('9dd24a11-6fe3-4d3c-8e25-f311b1f4afe5')
+            expect(response.body.naam).toBe('TestGewoonte')
+            expect(response.body.startDatum).toBeTruthy()
+            expect(response.body.geldBijVoltooiing).toBe(60)
+            expect(response.body.aantalKeerVoltooid).toBe(0)
+            expect(response.body.laatsteKeerVoltooid).toBeTruthy()
+            expect(response.body.soortHerhaling).toBe('Wekelijks')
+
+            gewoontesToDelete.push(response.body.gewoonteID)
         });
+    });
+
+    describe('PUT /api/gewoontes',() => {
+        const gewoonteChanged = {
+                gewoonteID: '8a307ca2-b393-4847-80b6-fa9f22e6e7a9',
+                gebruikersID: '1706481d-ae5a-4bcf-9ee3-20e71746e19c',
+                naam: '5km lopen',
+                startDatum: '2021-11-08',
+                geldBijVoltooiing: 40,
+                aantalKeerVoltooid: 2,
+                laatsteKeerVoltooid: '2021-11-21',
+                soortHerhaling: 'Wekelijks',
+        }
+
+        afterAll(async () => {
+            await knex(tables.gewoontes)
+            .whereIn('gewoonteID',gewoontesToDelete)
+            .update(gewoonteChanged);
+        })
+
+        it('should return 200 and return updated gewoonte',async () =>{
+            const response = await request.post(`${url}/8a307ca2-b393-4847-80b6-fa9f22e6e7a9`)
+                .send({
+                        gebruikersID: '9dd25a11-6fe3-4d3c-8e25-f311b1f4afe5',
+                        naam: 'GeupdateGewoonte',
+                        geldBijVoltooiing: 68,
+                        soortHerhaling: 'Dagelijks',
+                });
+            
+            expect(response.status).toBe(200);
+            expect(response.body.gewoonteID).toBe('8a307ca2-b393-4847-80b6-fa9f22e6e7a9')
+            expect(response.body.gebruikersID).toBe('9dd25a11-6fe3-4d3c-8e25-f311b1f4afe5')
+            expect(response.body.naam).toBe('GeupdateGewoonte')
+            expect(response.body.startDatum).toBe('2021-11-08')
+            expect(response.body.geldBijVoltooiing).toBe(68)
+            expect(response.body.aantalKeerVoltooid).toBe(2)
+            expect(response.body.laatsteKeerVoltooid).toBe('2021-11-21')
+            expect(response.body.soortHerhaling).toBe('Dagelijks')
+
+        });
+    });
+
+    describe('DELETE /api/gewoontes/?id',() => {
+        const gewoonteToAdd = {
+            gewoonteID: '8a307ca2-b393-4847-80b6-fa9f22e6e7a9',
+            gebruikersID: '1706481d-ae5a-4bcf-9ee3-20e71746e19c',
+            naam: '5km lopen',
+            startDatum: '2021-11-08',
+            geldBijVoltooiing: 40,
+            aantalKeerVoltooid: 2,
+            laatsteKeerVoltooid: '2021-11-21',
+            soortHerhaling: 'Wekelijks',
+        }
+
+        afterAll(async () => {
+            await knex(tables.gewoontes)
+            .whereIn('gewoonteID',gewoonteToAdd)
+            .insert(gewoonteToAdd);
+        });
+
+        it('should return 204 and return true',async () => {
+            const response = await request.delete(`${url}/${gewoonteToAdd.gewoonteID}`)
+
+            expect(response.status).toBe(204);
+            expect(response.body[0]).toBe(true)
+
+        })
+
     });
 });
