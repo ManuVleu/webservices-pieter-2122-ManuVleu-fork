@@ -116,7 +116,7 @@ const register = async ({ naam,wachtwoord }) => {
 	const gebruiker = await gebruikerRepo.create({
 		naam,
 		wachtwoordHash,
-		roles: [Role.USER],
+		roles: [Role.GEBRUIKER],
 	});
 
   return await makeLoginData(gebruiker);

@@ -118,7 +118,7 @@ const getKnexLogger = (logger, level) => (message) => {
 
     logger.info('Succesfully connected to the database');
   
-    return knexInstance;//Eigenlijk overbodig maja
+    return knexInstance;
   }
 
   async function shutdownData() {

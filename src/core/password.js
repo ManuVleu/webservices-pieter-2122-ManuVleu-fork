@@ -18,11 +18,14 @@ module.exports.hashPassword = async (password) => {
   return passwordHash;
 };
 
-module.exports.verifyPassword = (password, passwordHash) => {
-  let valid = false;
-  if (password==passwordHash){
-    valid = true
-  }
+module.exports.verifyPassword = async (password, passwordHash) => {
+  const valid = await argon2.verify(passwordHash, password, {
+		type: argon2.argon2id,
+		saltLength: ARGON_SALT_LENGTH,
+		hashLength: ARGON_HASH_LENGTH,
+		timeCost: ARGON_TIME_COST,
+		memoryCost: ARGON_MEMORY_COST,
+	});
 
-  return valid;
+	return valid;
 };
