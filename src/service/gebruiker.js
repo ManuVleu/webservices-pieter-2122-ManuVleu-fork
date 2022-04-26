@@ -49,7 +49,7 @@ const debugLog = (message, meta = {}) => {
    */
   const login = async (naam, wachtwoord) => {
 	const gebruiker = await gebruikerRepo.findByNaam(naam);
-  
+	
 	if (!gebruiker) {
 	  // DO NOT expose we don't know the gebruiker
 	  throw ServiceError.unauthorized('The given naam and wachtwoord do not match');

@@ -1,10 +1,16 @@
 const Router = require('@koa/router');
+const { getChildLogger } = require('../core/logging');
 const Joi = require('joi');
 const gebruikerService = require('../service/gebruiker');
 const Role = require('../core/roles');
 const { requireAuthentication, makeRequireRole } = require('../core/auth');
 
 const validate = require('./validation');
+
+const debugLog = (message, meta = {}) => {
+	if (!this.logger) this.logger = getChildLogger('gebruiker-rest');
+	this.logger.debug(message, meta);
+};
 
 const login = async (ctx) => {
 	const { naam, wachtwoord } = ctx.request.body;

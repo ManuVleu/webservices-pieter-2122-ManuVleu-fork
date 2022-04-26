@@ -1,6 +1,6 @@
 const uuid = require('uuid');
-const { tables, getKnex } = require('../data/index');
 const { getChildLogger } = require('../core/logging');
+const { logger } = require('../service/gebruiker');
 
 const SELECT_COLUMNS = [
   'id','naam','wachtwoord'
@@ -21,6 +21,9 @@ const findAll = async ({
   limit,
   offset,
 }) => {
+  const { getKnex } = require('../data')
+  const { tables } = require('../data/index');
+
   return getKnex()(tables.gebruikers)
     .select()
     .limit(limit)
@@ -32,6 +35,9 @@ const findAll = async ({
  * Calculate the total number of gebruiker.
  */
 const findCount = async () => {
+  const { getKnex } = require('../data')
+  const { tables } = require('../data/index');
+
   const [count] = await getKnex()(tables.gebruikers)
     .count();
   return count['count(*)'];
@@ -43,6 +49,9 @@ const findCount = async () => {
  * @param {string} id - The id van gebuiker to search for.
  */
 const findById = async (id) => {
+  const { getKnex } = require('../data')
+  const { tables } = require('../data/index');
+
   const gebruiker = await getKnex()(tables.gebruikers)
     .where('id', id)
     .first();
@@ -59,6 +68,9 @@ const findById = async (id) => {
  * @param {string} naam - The naam to search for.
  */
  const findByNaam = (naam) => {
+  const { getKnex } = require('../data')
+  const { tables } = require('../data/index');
+  
   return getKnex()(tables.gebruikers)
     .where('naam', naam)
     .first();
@@ -75,7 +87,10 @@ const create = async ({
   naam,wachtwoord,roles
 }) => {
   try {
+    const { getKnex } = require('../data')
+    const { tables } = require('../data/index');
     const id = uuid.v4();
+
     await getKnex()(tables.gebruikers)
       .insert({
         id,
@@ -100,6 +115,9 @@ const create = async ({
  */
 const deleteById = async (id) => {
   try {
+    const { getKnex } = require('../data')
+    const { tables } = require('../data/index');
+    
     const rowsAffected = await getKnex()(tables.gebruikers)
       .delete()
       .where('id', id);

@@ -1,7 +1,7 @@
-const yes = require('./data/index')
+const getKnex = require('./data/index')
 
 function main() {
     console.log('Werkende')
-    //console.log(yes.getKnex)
+    console.log(getKnex)
 }
 main();

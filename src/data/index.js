@@ -148,6 +148,7 @@ const getKnexLogger = (logger, level) => (message) => {
   module.exports = {
     tables,
     getKnex,
+    knexInstance,
     initializeData,
     shutdownData,
   };

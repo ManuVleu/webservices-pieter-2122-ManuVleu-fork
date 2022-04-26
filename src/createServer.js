@@ -25,7 +25,7 @@ module.exports = async function createServer () {
     defaultMeta: { NODE_ENV },
   });
 
-  await initializeData();
+  let knexInstance = await initializeData();
 
   const app = new Koa();
 
