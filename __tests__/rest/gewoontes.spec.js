@@ -37,9 +37,32 @@ const data = {
 };
 
 describe('gewoontes',() => {
+    let request;
+    let knex;
+    let loginHeader;
+
+    withServer(({ knex: k, supertest:s }) => {
+        knex = k;
+        request = s;
+    });
+
+    beforeAll(async () => {
+        loginHeader = await login(request);
+    });
+
     describe('GET /api/gewoontes',() => {
+        beforeAll(async () => {
+            await knex(tables.gewoontes).insert(data.gewoontes);
+          });
+      
+          afterAll(async () => {
+            await knex(tables.gewoontes)
+              .whereIn('gewoonteID', gewoontesToDelete)
+              .delete();
+          });
+
         it('should return 200 and list of gewoontes',async () => {
-            const response = await request.get(`${url}?limit=3`);
+            const response = await request.get(`${url}?limit=3`).set('Authorization', loginHeader);
             expect(response.status).toBe(200);
             expect(response.body.limit).toBe(3);
 		    expect(response.body.data.length).toBe(3);
@@ -49,7 +72,7 @@ describe('gewoontes',() => {
         });
 
         it('should return 200 and a specific gewoonte',async () => {
-            const response = await request.get(`${url}/360e6bbd-5ed4-466e-97f1-3ee356c277b7`);
+            const response = await request.get(`${url}/360e6bbd-5ed4-466e-97f1-3ee356c277b7`).set('Authorization', loginHeader);
             expect(response.status).toBe(200)
             expect(response.data.length).toBe(1);
             expect(response.body.data[0]).toEqual(
@@ -61,6 +84,10 @@ describe('gewoontes',() => {
     describe('POST /api/gewoontes',() => {
         const gewoontesToDelete = []
 
+        beforeAll(async () => {
+            await knex(tables.gewoontes).insert(data.gewoontes);
+          });
+
         afterAll(async () => {
             await knex(tables.gewoontes)
             .whereIn('gewoonteID',gewoontesToDelete)
@@ -68,7 +95,7 @@ describe('gewoontes',() => {
         })
 
         it('should return 201 and return created gewoonte',async () =>{
-            const response = await request.post(url)
+            const response = await request.post(url).set('Authorization', loginHeader)
                 .send({
                         gebruikersID: '9dd24a11-6fe3-4d3c-8e25-f311b1f4afe5',
                         naam: 'TestGewoonte',
@@ -91,6 +118,10 @@ describe('gewoontes',() => {
     });
 
     describe('PUT /api/gewoontes',() => {
+        beforeAll(async () => {
+            await knex(tables.gewoontes).insert(data.gewoontes);
+          });
+
         const gewoonteChanged = {
                 gewoonteID: '8a307ca2-b393-4847-80b6-fa9f22e6e7a9',
                 gebruikersID: '1706481d-ae5a-4bcf-9ee3-20e71746e19c',
@@ -109,7 +140,7 @@ describe('gewoontes',() => {
         })
 
         it('should return 200 and return updated gewoonte',async () =>{
-            const response = await request.post(`${url}/8a307ca2-b393-4847-80b6-fa9f22e6e7a9`)
+            const response = await request.post(`${url}/8a307ca2-b393-4847-80b6-fa9f22e6e7a9`).set('Authorization', loginHeader)
                 .send({
                         gebruikersID: '9dd25a11-6fe3-4d3c-8e25-f311b1f4afe5',
                         naam: 'GeupdateGewoonte',
@@ -142,6 +173,10 @@ describe('gewoontes',() => {
             soortHerhaling: 'Wekelijks',
         }
 
+        beforeAll(async () => {
+            await knex(tables.gewoontes).insert(data.gewoontes);
+          });
+
         afterAll(async () => {
             await knex(tables.gewoontes)
             .whereIn('gewoonteID',gewoonteToAdd)
@@ -149,7 +184,7 @@ describe('gewoontes',() => {
         });
 
         it('should return 204 and return true',async () => {
-            const response = await request.delete(`${url}/${gewoonteToAdd.gewoonteID}`)
+            const response = await request.delete(`${url}/${gewoonteToAdd.gewoonteID}`).set('Authorization', loginHeader)
 
             expect(response.status).toBe(204);
             expect(response.body[0]).toBe(true)

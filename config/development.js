@@ -16,7 +16,7 @@ module.exports = {
         port: 5432,
         name: 'habits',
         username: 'postgres',
-        password: '',
+        password: 'root',
     },
     pagination: {
         limit: 100,
