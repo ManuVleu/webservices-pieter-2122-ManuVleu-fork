@@ -18,5 +18,5 @@ async function main() {
   }
 }
 
-// Wrap inside a main function as top level await is not supported in all NodeJS versions.
+// Wrap inside a main function as top level await is not supported in all NodeJS versions..
 main();
