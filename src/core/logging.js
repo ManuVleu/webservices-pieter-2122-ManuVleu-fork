@@ -74,7 +74,7 @@ const getChildLogger = (name, meta = {}) => {
         silent: disabled,
       }),
       ...extraTransports,
-    ]
+    ],
   });
 
   logger.info(` Logger initialized with minimum log level ${level}`);

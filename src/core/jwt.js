@@ -42,6 +42,7 @@ module.exports.verifyJWT = (authToken) => {
     subject: 'auth',
   };
 
+
   return new Promise((resolve, reject) => {
     jwt.verify(
       authToken, JWT_SECRET, verifyOptions, (err, decodedToken) => {

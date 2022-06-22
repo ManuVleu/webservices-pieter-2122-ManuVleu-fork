@@ -1,7 +1,6 @@
-const { request } = require("http");
-const { url } = require("inspector");
-const { default: knex } = require("knex");
-const { tables } = require("../../src/data");
+const { url } = require('inspector');
+const { tables } = require('../../src/data');
+const { withServer, login } = require('../supertest.setup.js');
 
 const data = {
     gewoontes: [{
@@ -32,9 +31,15 @@ const data = {
         geldBijVoltooiing: 80,
         aantalKeerVoltooid: 0,
         laatsteKeerVoltooid: '2021-11-26',
-        soortHerhaling: 'Maandelijks'
-    }]
+        soortHerhaling: 'Maandelijks',
+    }],
 };
+
+const gewoontesToDelete = [
+    '360e6bbd-5ed4-466e-97f1-3ee356c277b7',
+    '8a307ca2-b393-4847-80b6-fa9f22e6e7a9',
+    '4edfc4a4-9f15-4952-b657-69c55330a49e',
+];
 
 describe('gewoontes',() => {
     let request;
@@ -61,28 +66,28 @@ describe('gewoontes',() => {
               .delete();
           });
 
-        it('should return 200 and list of gewoontes',async () => {
+        test('should return 200 and list of gewoontes',async () => {
             const response = await request.get(`${url}?limit=3`).set('Authorization', loginHeader);
             expect(response.status).toBe(200);
             expect(response.body.limit).toBe(3);
-		    expect(response.body.data.length).toBe(3);
+            expect(response.body.data.length).toBe(3);
             expect(response.body.data[0]).toEqual(
-                data.gewoontes
+                data.gewoontes,
             );
         });
 
-        it('should return 200 and a specific gewoonte',async () => {
+        test('should return 200 and a specific gewoonte',async () => {
             const response = await request.get(`${url}/360e6bbd-5ed4-466e-97f1-3ee356c277b7`).set('Authorization', loginHeader);
-            expect(response.status).toBe(200)
+            expect(response.status).toBe(200);
             expect(response.data.length).toBe(1);
             expect(response.body.data[0]).toEqual(
-                data.gewoontes[0]
+                data.gewoontes[0],
             );
-        })
+        });
     });
 
     describe('POST /api/gewoontes',() => {
-        const gewoontesToDelete = []
+        const gewoontesToDelete = [];
 
         beforeAll(async () => {
             await knex(tables.gewoontes).insert(data.gewoontes);
@@ -92,9 +97,9 @@ describe('gewoontes',() => {
             await knex(tables.gewoontes)
             .whereIn('gewoonteID',gewoontesToDelete)
             .delete();
-        })
+        });
 
-        it('should return 201 and return created gewoonte',async () =>{
+        test('should return 201 and return created gewoonte',async () =>{
             const response = await request.post(url).set('Authorization', loginHeader)
                 .send({
                         gebruikersID: '9dd24a11-6fe3-4d3c-8e25-f311b1f4afe5',
@@ -104,16 +109,16 @@ describe('gewoontes',() => {
                 });
             
             expect(response.status).toBe(201);
-            expect(response.body.gewoonteID).toBeTruthy()
-            expect(response.body.gebruikersID).toBe('9dd24a11-6fe3-4d3c-8e25-f311b1f4afe5')
-            expect(response.body.naam).toBe('TestGewoonte')
-            expect(response.body.startDatum).toBeTruthy()
-            expect(response.body.geldBijVoltooiing).toBe(60)
-            expect(response.body.aantalKeerVoltooid).toBe(0)
-            expect(response.body.laatsteKeerVoltooid).toBeTruthy()
-            expect(response.body.soortHerhaling).toBe('Wekelijks')
+            expect(response.body.gewoonteID).toBeTruthy();
+            expect(response.body.gebruikersID).toBe('9dd24a11-6fe3-4d3c-8e25-f311b1f4afe5');
+            expect(response.body.naam).toBe('TestGewoonte');
+            expect(response.body.startDatum).toBeTruthy();
+            expect(response.body.geldBijVoltooiing).toBe(60);
+            expect(response.body.aantalKeerVoltooid).toBe(0);
+            expect(response.body.laatsteKeerVoltooid).toBeTruthy();
+            expect(response.body.soortHerhaling).toBe('Wekelijks');
 
-            gewoontesToDelete.push(response.body.gewoonteID)
+            gewoontesToDelete.push(response.body.gewoonteID);
         });
     });
 
@@ -131,15 +136,15 @@ describe('gewoontes',() => {
                 aantalKeerVoltooid: 2,
                 laatsteKeerVoltooid: '2021-11-21',
                 soortHerhaling: 'Wekelijks',
-        }
+        };
 
         afterAll(async () => {
             await knex(tables.gewoontes)
             .whereIn('gewoonteID',gewoontesToDelete)
             .update(gewoonteChanged);
-        })
+        });
 
-        it('should return 200 and return updated gewoonte',async () =>{
+        test('should return 200 and return updated gewoonte',async () =>{
             const response = await request.post(`${url}/8a307ca2-b393-4847-80b6-fa9f22e6e7a9`).set('Authorization', loginHeader)
                 .send({
                         gebruikersID: '9dd25a11-6fe3-4d3c-8e25-f311b1f4afe5',
@@ -149,14 +154,14 @@ describe('gewoontes',() => {
                 });
             
             expect(response.status).toBe(200);
-            expect(response.body.gewoonteID).toBe('8a307ca2-b393-4847-80b6-fa9f22e6e7a9')
-            expect(response.body.gebruikersID).toBe('9dd25a11-6fe3-4d3c-8e25-f311b1f4afe5')
-            expect(response.body.naam).toBe('GeupdateGewoonte')
-            expect(response.body.startDatum).toBe('2021-11-08')
-            expect(response.body.geldBijVoltooiing).toBe(68)
-            expect(response.body.aantalKeerVoltooid).toBe(2)
-            expect(response.body.laatsteKeerVoltooid).toBe('2021-11-21')
-            expect(response.body.soortHerhaling).toBe('Dagelijks')
+            expect(response.body.gewoonteID).toBe('8a307ca2-b393-4847-80b6-fa9f22e6e7a9');
+            expect(response.body.gebruikersID).toBe('9dd25a11-6fe3-4d3c-8e25-f311b1f4afe5');
+            expect(response.body.naam).toBe('GeupdateGewoonte');
+            expect(response.body.startDatum).toBe('2021-11-08');
+            expect(response.body.geldBijVoltooiing).toBe(68);
+            expect(response.body.aantalKeerVoltooid).toBe(2);
+            expect(response.body.laatsteKeerVoltooid).toBe('2021-11-21');
+            expect(response.body.soortHerhaling).toBe('Dagelijks');
 
         });
     });
@@ -171,7 +176,7 @@ describe('gewoontes',() => {
             aantalKeerVoltooid: 2,
             laatsteKeerVoltooid: '2021-11-21',
             soortHerhaling: 'Wekelijks',
-        }
+        };
 
         beforeAll(async () => {
             await knex(tables.gewoontes).insert(data.gewoontes);
@@ -183,13 +188,13 @@ describe('gewoontes',() => {
             .insert(gewoonteToAdd);
         });
 
-        it('should return 204 and return true',async () => {
-            const response = await request.delete(`${url}/${gewoonteToAdd.gewoonteID}`).set('Authorization', loginHeader)
+        test('should return 204 and return true',async () => {
+            const response = await request.delete(`${url}/${gewoonteToAdd.gewoonteID}`).set('Authorization', loginHeader);
 
             expect(response.status).toBe(204);
-            expect(response.body[0]).toBe(true)
+            expect(response.body[0]).toBe(true);
 
-        })
+        });
 
     });
 });

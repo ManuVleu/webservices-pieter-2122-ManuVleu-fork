@@ -1,9 +1,8 @@
-const uuid = require('uuid');
 const { tables, getKnex } = require('../data');
 const { getChildLogger } = require('../core/logging');
 
 const SELECT_COLUMNS = [
-  `gebruikersID`,
+  'gebruikersID',
   'geldBedrijfA','geldBedrijfB','geldBedrijfC',
 ];
 
@@ -52,7 +51,7 @@ const findById = async (gebruikersID) => {
   const stockmarket = await getKnex()(tables.stockmarket)
     .first(SELECT_COLUMNS)
     .where(`${tables.gebruikers}.id`,gebruikersID)
-    .join(tables.gebruikers, `${tables.stockmarket}.gebruikersID`, '=', `${tables.gebruikers}.id`)
+    .join(tables.gebruikers, `${tables.stockmarket}.gebruikersID`, '=', `${tables.gebruikers}.id`);
   
   return stockmarket && formatStockmarket(stockmarket);
 };
@@ -110,7 +109,7 @@ const updateById = async (gebruikersID, {
         geldBedrijfB,
         geldBedrijfC,
       })
-    .where(`gebruikersID`,gebruikersID);
+    .where('gebruikersID',gebruikersID);
     return await findById(gebruikersID);
   } catch (error) {
     const logger = getChildLogger('stockmarket-repo');
@@ -132,7 +131,7 @@ const deleteById = async (gebruikersID) => {
   try {
     const rowsAffected = await getKnex()(tables.stockmarket)
       .delete()
-      .where(`gebruikersID`,gebruikersID);
+      .where('gebruikersID',gebruikersID);
     return rowsAffected > 0;
   } catch (error) {
     const logger = getChildLogger('stockmarket-repo');

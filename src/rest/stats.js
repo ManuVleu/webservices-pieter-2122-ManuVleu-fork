@@ -22,18 +22,16 @@ getAllStats.validationScheme = {
 
 const createStat = async (ctx) => {
 	const newStat = await statsService.create({
-		...ctx.request.body,
-		gebruikersID: ctx.state.session.gebruikersID,
-		date: new Date(ctx.request.body.date),
+		gebruikersID: ctx.request.body.gebruikersID,
 	});
 	ctx.body = newStat;
 	ctx.status = 201;
 };
 createStat.validationScheme = {
 	body: {
-		amount: Joi.number()
-	}
-}
+		gebruikersID: Joi.string().uuid(),
+	},
+};
 
 const getStatById = async (ctx) => {
 	ctx.body = await statsService.getById(ctx.params.id);
@@ -59,8 +57,8 @@ updateStat.validationScheme = {
 		meesteGeldOoit: Joi.number().min(0),
 		meestWinstStockmarketOoit: Joi.number().min(0),
 		geld: Joi.number().min(0),
-	}
-}
+	},
+};
 
 const deleteStat = async (ctx) => {
 	await statsService.deleteById(ctx.params.id);
@@ -69,8 +67,8 @@ const deleteStat = async (ctx) => {
 deleteStat.validationScheme = {
 	params: {
 		id: Joi.string().uuid(),
-	}
-}
+	},
+};
 
 /**
  * Install transaction routes in the given router.

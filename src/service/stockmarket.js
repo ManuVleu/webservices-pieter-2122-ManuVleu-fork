@@ -1,7 +1,6 @@
 const config = require('config');
 const { getChildLogger } = require('../core/logging');
 const stockmarketRepo = require('../repository/stockmarket');
-const gebruikerService = require('../service/gebruiker');
 
 const DEFAULT_PAGINATION_LIMIT = config.get('pagination.limit');
 const DEFAULT_PAGINATION_OFFSET = config.get('pagination.offset');
@@ -28,7 +27,7 @@ const debugLog = (message, meta = {}) => {
 		data,
 		count,
 		limit,
-		offset
+		offset,
 	};
 };
 

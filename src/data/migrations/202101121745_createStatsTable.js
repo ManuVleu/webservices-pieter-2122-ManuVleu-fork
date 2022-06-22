@@ -19,4 +19,4 @@ module.exports = {
     down: (knex) => {
         return knex.schema.dropTableIfExists(tables.stats);
     },
-}
+};

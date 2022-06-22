@@ -33,7 +33,7 @@ module.exports = {
                 geldBijVoltooiing: 80,
                 aantalKeerVoltooid: 0,
                 laatsteKeerVoltooid: '2021-11-26',
-                soortHerhaling: 'Maandelijks'
+                soortHerhaling: 'Maandelijks',
             },
         ]);
     },

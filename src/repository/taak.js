@@ -3,9 +3,9 @@ const { tables, getKnex } = require('../data');
 const { getChildLogger } = require('../core/logging');
 
 const SELECT_COLUMNS = [
-  'taakID',`gebruikersID`,
+  'taakID','gebruikersID',
   `${tables.taken}.naam as taakNaam`,
-  `startDatum`,'eindDatum',`geldBijVoltooiing`,
+  'startDatum','eindDatum','geldBijVoltooiing',
 ];
 
 const formatTaak = ({ ...rest }) => ({
@@ -52,7 +52,7 @@ const findCount = async () => {
 const findById = async (taakID) => {
   const taak = await getKnex()(tables.taken)
     .first(SELECT_COLUMNS)
-    .where(`${tables.taken}.taakID`, taakID)
+    .where(`${tables.taken}.taakID`, taakID);
   
   if(!taak)
     return 'Error: De taak met de gegeven taakID bestaat niet.';
@@ -72,7 +72,7 @@ const findById = async (taakID) => {
  * @returns {Promise<object>} Created taak
  */
 const create = async ({
-  gebruikersID,naam, geldBijVoltooiing,eindDatum
+  gebruikersID,naam, geldBijVoltooiing,eindDatum,
 }) => {
   try {
     const taakID = uuid.v4();
@@ -120,7 +120,7 @@ const updateById = async (taakID, {
         geldBijVoltooiing,
         eindDatum,
       })
-      .where(`${tables.taken}.taakID`, taakID)
+      .where(`${tables.taken}.taakID`, taakID);
     return await findById(taakID);
   } catch (error) {
     const logger = getChildLogger('taken-repo');
@@ -142,7 +142,7 @@ const deleteById = async (id) => {
   try {
     const rowsAffected = await getKnex()(tables.taken)
       .delete()
-      .where(`${tables.taken}.taakID`, id)
+      .where(`${tables.taken}.taakID`, id);
     return rowsAffected > 0;
   } catch (error) {
     const logger = getChildLogger('taken-repo');

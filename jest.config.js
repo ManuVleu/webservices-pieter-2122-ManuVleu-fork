@@ -35,7 +35,7 @@ module.exports = {
   // ],
 
   // Indicates which provider should be used to instrument code for coverage
-  coverageProvider: "v8",
+  coverageProvider: 'v8',
 
   // A list of reporter names that Jest uses when writing coverage reports
   // coverageReporters: [
@@ -61,7 +61,7 @@ module.exports = {
   globalSetup: './__tests__/global.setup.js',
 
   // A path to a module which exports an async function that is triggered once after all test suites
-  globalSetup: './__tests__/global.teardown.js',
+  globalTeardown: './__tests__/global.teardown.js',
 
   // A set of global variables that need to be available in all test environments
   // globals: {},
@@ -151,8 +151,8 @@ module.exports = {
 
   // The glob patterns Jest uses to detect test files
   testMatch: [
-    "**/__tests__/**/?(*.)+(spec|test).[jt]s?(x)",
-  ]
+    '**/__tests__/**/?(*.)+(spec|test).[jt]s?(x)',
+  ],
 
   // An array of regexp pattern strings that are matched against all test paths, matched tests are skipped
   // testPathIgnorePatterns: [

@@ -23,7 +23,7 @@ module.exports = async () => {
   {
     id: '7f28c5f9-d711-4cd6-ac15-d13d71abffaa',
     naam: 'TestAdmin',
-    password_hash:
+    wachtwoord:
       '$argon2id$v=19$m=131072,t=6,p=1$3TajseKeojlCL7eo16Tp5g$5YP6wd1ljl3KRJsPW/J2EVrfF5liFdi+2/TNquZb8wo',
     roles: JSON.stringify([Role.ADMIN, Role.GEBRUIKER]),
   }]);

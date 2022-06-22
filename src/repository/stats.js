@@ -1,9 +1,8 @@
-const uuid = require('uuid');
 const { tables, getKnex } = require('../data');
 const { getChildLogger } = require('../core/logging');
 
 const SELECT_COLUMNS = [
-  `gebruikersID`,
+  'gebruikersID',
   'gewoonteIDMeestVoltooid','meesteGeldOoit','meestWinstStockmarketOoit','geld',
 ];
 
@@ -51,10 +50,10 @@ const findById = async (gebruikersID) => {
   const stats = await getKnex()(tables.stats)
     .first(SELECT_COLUMNS)
     .where(`${tables.gebruikers}.id`,gebruikersID)
-    .join(tables.gebruikers, `${tables.stats}.gebruikersID`, '=', `${tables.gebruikers}.id`)
+    .join(tables.gebruikers, `${tables.stats}.gebruikersID`, '=', `${tables.gebruikers}.id`);
   
     if(!stats)
-      return 'Error: Stats met gegeven gebruikersID bestaat niet.'
+      return 'Error: Stats met gegeven gebruikersID bestaat niet.';
 
   return stats && formatStats(stats);
 };
@@ -71,7 +70,7 @@ const create = async ({
   gebruikersID,
 }) => {
   try {
-    const gewoonteIDMeestVoltooid = "";
+    const gewoonteIDMeestVoltooid = '8a307ca2-b393-4847-80b6-fa9f22e6e7a8';
     const meesteGeldOoit = 0;
     const meestWinstStockmarketOoit = 0;
     const geld = 0;
@@ -141,7 +140,7 @@ const deleteById = async (gebruikersID) => {
   try {
     const rowsAffected = await getKnex()(tables.stats)
       .delete()
-      .where(`gebruikersID`,gebruikersID);
+      .where('gebruikersID',gebruikersID);
     return rowsAffected > 0;
   } catch (error) {
     const logger = getChildLogger('stats-repo');

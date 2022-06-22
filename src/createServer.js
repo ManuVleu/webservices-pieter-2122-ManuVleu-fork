@@ -25,7 +25,7 @@ module.exports = async function createServer () {
     defaultMeta: { NODE_ENV },
   });
 
-  let knexInstance = await initializeData();
+  await initializeData();
 
   const app = new Koa();
 
@@ -86,6 +86,7 @@ module.exports = async function createServer () {
       }
     } catch (error) {
       const logger = getLogger();
+      logger.error(JSON.stringify(ctx.request));
       logger.error('Error occured while handling a request', {
         error: serializeError(error),
       });

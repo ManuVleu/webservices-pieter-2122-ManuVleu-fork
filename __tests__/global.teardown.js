@@ -8,4 +8,4 @@ module.exports = async () => {
     await getKnex()(tables.stockmarket).delete();
 
 	await shutdownData();
-}
+};

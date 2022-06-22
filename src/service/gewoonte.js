@@ -1,7 +1,6 @@
 const config = require('config');
 const { getChildLogger } = require('../core/logging');
 const gewoonteRepo = require('../repository/gewoonte');
-const gebruikerService = require('../service/gebruiker');
 
 const DEFAULT_PAGINATION_LIMIT = config.get('pagination.limit');
 const DEFAULT_PAGINATION_OFFSET = config.get('pagination.offset');
@@ -28,7 +27,7 @@ const getAll = async (
 		data,
 		count,
 		limit,
-		offset
+		offset,
 	};
 };
 
@@ -64,7 +63,7 @@ const create = async ({ gebruikersID,naam, geldBijVoltooiing, soortHerhaling }) 
 	debugLog('Nieuwe gewoonte aan het maken', {gebruikersID,naam, geldBijVoltooiing, soortHerhaling});
 
 	return gewoonteRepo.create({
-		gebruikersID,naam, geldBijVoltooiing, soortHerhaling
+		gebruikersID,naam, geldBijVoltooiing, soortHerhaling,
 	});
 };
 
@@ -83,7 +82,7 @@ const updateById = async (gewoonteID, { naam,geldBijVoltooiing,aantalKeerVoltooi
 	debugLog(`Updating gewoonte met id ${gewoonteID}`, { naam,geldBijVoltooiing,aantalKeerVoltooid,laatsteKeerVoltooid, soortHerhaling });
 
 	return gewoonteRepo.updateById(gewoonteID, {
-		naam,geldBijVoltooiing,aantalKeerVoltooid,laatsteKeerVoltooid, soortHerhaling
+		naam,geldBijVoltooiing,aantalKeerVoltooid,laatsteKeerVoltooid, soortHerhaling,
 	});
 
 };

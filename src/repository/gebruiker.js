@@ -1,14 +1,5 @@
 const uuid = require('uuid');
 const { getChildLogger } = require('../core/logging');
-const { logger } = require('../service/gebruiker');
-
-const SELECT_COLUMNS = [
-  'id','naam','wachtwoord'
-];
-
-const formatGebruiker = ({ ...rest }) => ({
-	...rest,
-});
 
 /**
  * Get all `limit` gebruikers, skip the first `offset`.
@@ -21,7 +12,7 @@ const findAll = async ({
   limit,
   offset,
 }) => {
-  const { getKnex } = require('../data')
+  const { getKnex } = require('../data');
   const { tables } = require('../data/index');
 
   return getKnex()(tables.gebruikers)
@@ -35,7 +26,7 @@ const findAll = async ({
  * Calculate the total number of gebruiker.
  */
 const findCount = async () => {
-  const { getKnex } = require('../data')
+  const { getKnex } = require('../data');
   const { tables } = require('../data/index');
 
   const [count] = await getKnex()(tables.gebruikers)
@@ -49,7 +40,7 @@ const findCount = async () => {
  * @param {string} id - The id van gebuiker to search for.
  */
 const findById = async (id) => {
-  const { getKnex } = require('../data')
+  const { getKnex } = require('../data');
   const { tables } = require('../data/index');
 
   const gebruiker = await getKnex()(tables.gebruikers)
@@ -57,7 +48,7 @@ const findById = async (id) => {
     .first();
 
     if(!gebruiker)
-      return 'Error: Gebruiker met gegeven ID bestaat niet.'
+      return 'Error: Gebruiker met gegeven ID bestaat niet.';
 
     return gebruiker;
 };
@@ -68,7 +59,7 @@ const findById = async (id) => {
  * @param {string} naam - The naam to search for.
  */
  const findByNaam = (naam) => {
-  const { getKnex } = require('../data')
+  const { getKnex } = require('../data');
   const { tables } = require('../data/index');
   
   return getKnex()(tables.gebruikers)
@@ -84,10 +75,10 @@ const findById = async (id) => {
  * @param {string} gebruiker.wachtwoord - Wachtwoord of the gebruiker.
  */
 const create = async ({
-  naam,wachtwoord,roles
+  naam,wachtwoord,roles,
 }) => {
   try {
-    const { getKnex } = require('../data')
+    const { getKnex } = require('../data');
     const { tables } = require('../data/index');
     const id = uuid.v4();
 
@@ -115,7 +106,7 @@ const create = async ({
  */
 const deleteById = async (id) => {
   try {
-    const { getKnex } = require('../data')
+    const { getKnex } = require('../data');
     const { tables } = require('../data/index');
     
     const rowsAffected = await getKnex()(tables.gebruikers)

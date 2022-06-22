@@ -12,7 +12,7 @@ const getAllGewoontes = async (ctx) => {
 	);
 	ctx.body = gewoontes;
 };
-getAllGewoontes.valdationScheme = {
+getAllGewoontes.validationScheme = {
 	query: Joi.object({
 		limit: Joi.number().integer().positive().max(1000).optional(),
 		offset: Joi.number().integer().min(0).optional(),
@@ -20,31 +20,30 @@ getAllGewoontes.valdationScheme = {
 };
 
 const createGewoonte = async (ctx) => {
-	const newGewoonte = await gewoonteService.create({
-		...ctx.request.body,
-	gebruikersID: ctx.state.session.gebruikersID,
-	startDatum: new Date(ctx.request.body.startDatum),
-		laatsteKeerVoltooid: new Date(ctx.request.body.laatsteKeerVoltooid),
-});
+	const newGewoonte = await gewoonteService.create(
+		ctx.request.body,
+);
+	console.log('In de resttttttttttttttttttttttttttttttttttttttt');
 	ctx.body = newGewoonte;
 	ctx.status = 201;
 };
-createGewoonte.valdationScheme = {
+createGewoonte.validationScheme = {
 	body: {
+		gebruikersID: Joi.string().uuid(),
 		naam: Joi.string(),
 		geldBijVoltooiing: Joi.number().min(0),
-		soortHerhaling: Joi.string()
+		soortHerhaling: Joi.string(),
 	},
 };
 
 const getGewoonteById = async (ctx) => {
 	ctx.body = await gewoonteService.getById(ctx.params.id);
 };
-getGewoonteById.valdationScheme = {
+getGewoonteById.validationScheme = {
 	params: {
 		id: Joi.string().uuid(),
-	}
-}
+	},
+};
 
 const updateGewoonte = async (ctx) => {
 	ctx.body = await gewoonteService.updateById(ctx.params.id, {
@@ -54,26 +53,28 @@ const updateGewoonte = async (ctx) => {
 		laatsteKeerVoltooid: new Date(ctx.request.body.laatsteKeerVoltooid),
 	});
 };
-updateGewoonte.valdationScheme = {
+updateGewoonte.validationScheme = {
 	params: {
 		id: Joi.string().uuid(),
 	},
 	body: {
 		naam: Joi.string(),
 		geldBijVoltooiing: Joi.number().min(0),
-		soortHerhaling: Joi.string()
-	}
-}
+		soortHerhaling: Joi.string(),
+		aantalKeerVoltooid: Joi.number().min(0),
+		laatsteKeerVoltooid: Joi.date().iso().less('now'),
+	},
+};
 
 const deleteGewoonte = async (ctx) => {
 	await gewoonteService.deleteById(ctx.params.id);
 	ctx.status = 204;
 };
-deleteGewoonte.valdationScheme = {
+deleteGewoonte.validationScheme = {
 	params: {
 		id: Joi.string().uuid(),
-	}
-}
+	},
+};
 
 /**
  * Install transaction routes in the given router.

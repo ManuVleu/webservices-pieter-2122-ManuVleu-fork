@@ -22,7 +22,7 @@ getAllTaken.validationScheme = {
 const createTaak = async (ctx) => {
 	const newTaak = await taakService.create({
 		...ctx.request.body,
-		gebruikersID: ctx.state.session.gebruikersID,
+		gebruikersID: ctx.request.body.gebruikersID,
 		eindDatum: new Date(ctx.request.body.eindDatum),
 	});
 	ctx.body = newTaak;
@@ -30,11 +30,12 @@ const createTaak = async (ctx) => {
 };
 createTaak.validationScheme = {
 	body: {
+		gebruikersID: Joi.string().uuid(),
 		naam: Joi.string().max(255),
 		geldBijVoltooiing: Joi.number().min(0),
 		eindDatum: Joi.date().iso().greater('now'),
-	}
-}
+	},
+};
 
 const getTaakById = async (ctx) => {
 	ctx.body = await taakService.getById(ctx.params.id);
@@ -49,7 +50,7 @@ const updateTaak = async (ctx) => {
 	ctx.body = await taakService.updateById(ctx.params.id, {
 		...ctx.request.body,
 		gebruikersID: ctx.state.session.gebruikersID,
-		eindDatum: new Date(ctx.request.body.date),
+		eindDatum: new Date(ctx.request.body.eindDatum),
 	});
 };
 updateTaak.validationScheme = {
@@ -60,8 +61,8 @@ updateTaak.validationScheme = {
 		naam: Joi.string().max(255),
 		geldBijVoltooiing: Joi.number().min(0),
 		eindDatum: Joi.date().iso().greater('now'),
-	}
-}
+	},
+};
 
 const deleteTaak = async (ctx) => {
 	await taakService.deleteById(ctx.params.id);

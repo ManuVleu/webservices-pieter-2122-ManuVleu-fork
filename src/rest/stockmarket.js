@@ -32,8 +32,8 @@ createStockmarket.validationScheme = {
 		geldBedrijfA: Joi.number().positive(),
 		geldBedrijfB: Joi.number().positive(),
 		geldBedrijfC: Joi.number().positive(),
-	}
-}
+	},
+};
 
 const getStockmarketById = async (ctx) => {
 	ctx.body = await stockmarketService.getById(ctx.params.id);
@@ -58,8 +58,8 @@ updateStockmarket.validationScheme = {
 		geldBedrijfA: Joi.number().positive(),
 		geldBedrijfB: Joi.number().positive(),
 		geldBedrijfC: Joi.number().positive(),
-	}
-}
+	},
+};
 
 const deleteStockmarket = async (ctx) => {
 	await stockmarketService.deleteById(ctx.params.id);
@@ -68,8 +68,8 @@ const deleteStockmarket = async (ctx) => {
 deleteStockmarket.validationScheme = {
 	params: {
 		id: Joi.string().uuid(),
-	}
-}
+	},
+};
 
 /**
  * Install transaction routes in the given router.

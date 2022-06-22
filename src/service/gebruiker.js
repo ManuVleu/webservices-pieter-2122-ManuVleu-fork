@@ -34,8 +34,8 @@ const debugLog = (message, meta = {}) => {
 	const token = await generateJWT(gebruiker);
   
 	return {
-	  gebruiker: makeExposedGebruiker(gebruiker),
-	  token,
+		gebruiker: makeExposedGebruiker(gebruiker),
+		token,
 	};
   };
   
@@ -51,15 +51,15 @@ const debugLog = (message, meta = {}) => {
 	const gebruiker = await gebruikerRepo.findByNaam(naam);
 	
 	if (!gebruiker) {
-	  // DO NOT expose we don't know the gebruiker
-	  throw ServiceError.unauthorized('The given naam and wachtwoord do not match');
+		// DO NOT expose we don't know the gebruiker
+		throw ServiceError.unauthorized('The given naam and wachtwoord do not match');
 	}
 	
 	const wachtwoordValid = await verifyPassword(wachtwoord, gebruiker.wachtwoord);
   
 	if (!wachtwoordValid) {
-	  // DO NOT expose we know the gebruiker but an invalid password was given
-	  throw ServiceError.unauthorized('The given naam and wachtwoord do not match');
+		// DO NOT expose we know the gebruiker but an invalid password was given
+		throw ServiceError.unauthorized('The given naam and wachtwoord do not match');
 	}
 	
 	return await makeLoginData(gebruiker);
@@ -82,7 +82,7 @@ const debugLog = (message, meta = {}) => {
 		data: data.map(makeExposedGebruiker),
 		count: totalCount,
 		limit,
-		offset
+		offset,
 	};
 };
 
@@ -100,7 +100,7 @@ const getById = async ( id ) => {
 	}
 
 	return makeExposedGebruiker(gebruiker);
-}
+};
 
 /**
  * Registreren nieuwe gebruiker
@@ -151,28 +151,28 @@ const register = async ({ naam,wachtwoord }) => {
  */
  const checkAndParseSession = async (authHeader) => {
 	if (!authHeader) {
-	  throw ServiceError.unauthorized('You need to be signed in');
+		throw ServiceError.unauthorized('You need to be signed in');
 	}
   
 	if (!authHeader.startsWith('Bearer ')) {
-	  throw ServiceError.unauthorized('Invalid authentication token');
+		throw ServiceError.unauthorized('Invalid authentication token');
 	}
   
 	const authToken = authHeader.substr(7);
 	try {
-	  const {
+		const {
 		roles, gebruikersID,
-	  } = await verifyJWT(authToken);
+		} = await verifyJWT(authToken);
   
-	  return {
+		return {
 		gebruikersID,
 		roles,
 		authToken,
-	  };
+		};
 	} catch (error) {
-	  const logger = getChildLogger('gebruiker-service');
-	  logger.error(error.message, { error });
-	  throw ServiceError.unauthorized(error.message);
+		const logger = getChildLogger('gebruiker-service');
+		logger.error(error.message, { error });
+		throw ServiceError.unauthorized(error.message);
 	}
   };
   
@@ -191,7 +191,7 @@ const register = async ({ naam,wachtwoord }) => {
 	const hasPermission = roles.includes(role);
   
 	if (!hasPermission) {
-	  throw ServiceError.forbidden('You are not allowed to view this part of the application');
+		throw ServiceError.forbidden('You are not allowed to view this part of the application');
 	}
   };
 
@@ -202,5 +202,5 @@ module.exports = {
 	deleteById,
 	checkAndParseSession,
 	checkRole,
-	login
+	login,
 };

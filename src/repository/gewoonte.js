@@ -3,10 +3,10 @@ const { tables, getKnex } = require('../data');
 const { getChildLogger } = require('../core/logging');
 
 const SELECT_COLUMNS = [
-  'gewoonteID',`gebruikersID`,
+  'gewoonteID','gebruikersID',
   `${tables.gewoontes}.naam as gewoonteNaam`,
-  `startDatum`,'aantalKeerVoltooid','laatsteKeerVoltooid','soortHerhaling',
-  `geldBijVoltooiing`,
+  'startDatum','aantalKeerVoltooid','laatsteKeerVoltooid','soortHerhaling',
+  'geldBijVoltooiing',
 ];
 
 const formatGewoonte = ({ ...rest }) => ({
@@ -53,7 +53,7 @@ const findCount = async () => {
 const findById = async (gewoonteID) => {
   const gewoonte = await getKnex()(tables.gewoontes)
     .first(SELECT_COLUMNS)
-    .where(`${tables.gewoontes}.gewoonteID`, gewoonteID)
+    .where(`${tables.gewoontes}.gewoonteID`, gewoonteID);
 
     if(!gewoonte){
       return 'Error: Gewoonte met gegeven ID bestaat niet.';
@@ -124,7 +124,7 @@ const updateById = async (gewoonteID, {
   geldBijVoltooiing,
   soortHerhaling,
   aantalKeerVoltooid,
-  laatsteKeerVoltooid
+  laatsteKeerVoltooid,
 }) => {
   try {
     await getKnex()(tables.gewoontes)
@@ -133,9 +133,9 @@ const updateById = async (gewoonteID, {
         geldBijVoltooiing,
         soortHerhaling,
         aantalKeerVoltooid,
-        laatsteKeerVoltooid
+        laatsteKeerVoltooid,
       })
-      .where(`${tables.gewoontes}.gewoonteID`, gewoonteID)
+      .where(`${tables.gewoontes}.gewoonteID`, gewoonteID);
     return await findById(gewoonteID);
   } catch (error) {
     const logger = getChildLogger('gewoontes-repo');
@@ -157,7 +157,7 @@ const deleteById = async (id) => {
   try {
     const rowsAffected = await getKnex()(tables.gewoontes)
       .delete()
-      .where(`${tables.gewoontes}.gewoonteID`, id)
+      .where(`${tables.gewoontes}.gewoonteID`, id);
     return rowsAffected > 0;
   } catch (error) {
     const logger = getChildLogger('gewoontes-repo');

@@ -1,7 +1,6 @@
 const config = require('config');
 const { getChildLogger } = require('../core/logging');
 const taakRepo = require('../repository/taak');
-const gebruikerService = require('../service/gebruiker');
 
 const DEFAULT_PAGINATION_LIMIT = config.get('pagination.limit');
 const DEFAULT_PAGINATION_OFFSET = config.get('pagination.offset');
@@ -28,7 +27,7 @@ const getAll = async (
 		data,
 		count,
 		limit,
-		offset
+		offset,
 	};
 };
 
@@ -65,7 +64,7 @@ const create = async ({ gebruikersID,naam, geldBijVoltooiing,eindDatum }) => {
 
 
 	return taakRepo.create({
-		gebruikersID,naam, geldBijVoltooiing,eindDatum
+		gebruikersID,naam, geldBijVoltooiing,eindDatum,
 	});
 };
 
@@ -82,7 +81,7 @@ const updateById = async (taakID, { naam,geldBijVoltooiing, eindDatum  }) => {
 	debugLog(`Updating taak met id ${taakID}`, { naam,geldBijVoltooiing, eindDatum });
 
 	return taakRepo.updateById(taakID, {
-		naam,geldBijVoltooiing, eindDatum
+		naam,geldBijVoltooiing, eindDatum,
 	});
 
 

@@ -1,7 +1,6 @@
 const config = require('config');
 const { getChildLogger } = require('../core/logging');
 const statRepo = require('../repository/stats');
-const gebruikerService = require('../service/gebruiker');
 
 const DEFAULT_PAGINATION_LIMIT = config.get('pagination.limit');
 const DEFAULT_PAGINATION_OFFSET = config.get('pagination.offset');
@@ -28,7 +27,7 @@ const debugLog = (message, meta = {}) => {
 		data,
 		count,
 		limit,
-		offset
+		offset,
 	};
 };
 
@@ -77,7 +76,7 @@ const updateById = async (gebruikersID, { gewoonteIDMeestVoltooid, meesteGeldOoi
 	debugLog(`Updating stat met gebruikersid ${gebruikersID}`, { gewoonteIDMeestVoltooid, meesteGeldOoit, meestWinstStockmarketOoit,geld });
     
 	return statRepo.updateById(gebruikersID, {
-		gewoonteIDMeestVoltooid, meesteGeldOoit, meestWinstStockmarketOoit,geld
+		gewoonteIDMeestVoltooid, meesteGeldOoit, meestWinstStockmarketOoit,geld,
 	});
 };
 
