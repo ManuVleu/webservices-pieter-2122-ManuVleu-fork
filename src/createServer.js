@@ -100,7 +100,7 @@ module.exports = async function createServer () {
 
       if (error instanceof ServiceError) {
         if (error.isNotFound) {
-          statusCode = 404;
+          statusCode = 404; 
         }
 
         if (error.isValidationFailed) {
