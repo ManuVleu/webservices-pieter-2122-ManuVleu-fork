@@ -18,6 +18,9 @@ async function main() {
   }
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> a0fc0c0 (removed package-lock.json)
 // Wrap inside a main function as top level await is not supported in all NodeJS versions.
 main();
