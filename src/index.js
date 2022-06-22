@@ -11,7 +11,7 @@ async function main() {
       process.exit(0);
     }
 
-    process.on('SIGTERM', onClose);
+    process.on('SIGTERM', onClose);   
     process.on('SIGQUIT', onClose);
   } catch (error){
     process.exit(-1);
