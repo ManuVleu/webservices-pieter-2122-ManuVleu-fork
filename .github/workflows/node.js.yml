@@ -5,9 +5,9 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ main ]
 
 jobs:
   build:
@@ -15,11 +15,11 @@ jobs:
     runs-on: ubuntu-latest
     env:
       NODE_ENV: test
-			DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
-			DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
-			DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
-			DATABASE_HOST: remotemysql.com
-			JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
+      DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+      DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+      DATABASE_HOST: remotemysql.com
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
     
     strategy:
       matrix:
@@ -27,15 +27,15 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'yarn'
     - uses: actions/cache@v2
-			with:
-				path: '**/node_modules'
-				key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+      with:
+      	path: '**/node_modules'
+	key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
     - run: yarn install --frozen-lockfile
-    - run: yarn run test:ci
+    - run: yarn test:ci
