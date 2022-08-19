@@ -3,10 +3,10 @@
 1. Maak een .env file in de root met als inhoud
 ```
 NODE_ENV="development"
-DATABASE_USERNAME="postgres"
-DATABASE_PASSWORD="root"
-DATABASE_HOST="localhost"
-DATABASE_PORT=5432
+DATABASE_USERNAME="gebruikersnaam van uw database"
+DATABASE_PASSWORD="wachtwoord van uw database"
+DATABASE_HOST="hoogstwaarschijnlijk localhost"
+DATABASE_PORT=poort waarop de database draait (5432 of 3306)
 ```
 2. installeer alle nodige packages via het commando `yarn install`
 ## Starten van de API
