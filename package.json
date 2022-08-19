@@ -1,4 +1,6 @@
 {
+  "name": "webservices-habits-manuvleurick",
+  "license": "UNLICENSED",
   "scripts": {
     "start": "npx env-cmd nodemon src/index.js",
     "web": "node src/index.js",
