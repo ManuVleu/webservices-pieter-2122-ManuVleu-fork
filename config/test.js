@@ -11,7 +11,7 @@ module.exports = {
         client: 'pg',
         host: 'localhost',
         port: 5432,
-        name: 'habits',
+        name: 'habits_test',
         username: 'postgres',
         password: '',
     },
@@ -29,8 +29,8 @@ module.exports = {
 		jwt: {
             secret: 'nenzeermoeilijkesecretdieikeenbeetjegarekkenmeteenonnodigelangeuitleg',
             expirationInterval: 60 * 60 * 1000, // ms (1 hour)
-            issuer: 'habits',
-            audience: 'habits',
+            issuer: 'habits_test',
+            audience: 'habits_test',
           },
 	}
 };
