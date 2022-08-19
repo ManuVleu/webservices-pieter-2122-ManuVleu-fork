@@ -4,14 +4,14 @@
 name: Node.js CI
 
 on:
-push:
-  branches: [ main ]
-pull_request:
-  branches: [ main ]
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
   build:
-  
+
     runs-on: ubuntu-latest
     env:
       NODE_ENV: test
@@ -20,19 +20,21 @@ jobs:
       DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
       DATABASE_HOST: remotemysql.com
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
+
     strategy:
       matrix:
         node-version: [16.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'yarn'
     - uses: actions/cache@v2
-    	with:
+      with:
         path: '**/node_modules'
         key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
     - run: yarn install --frozen-lockfile
