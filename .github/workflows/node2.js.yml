@@ -11,15 +11,15 @@ on:
 
 jobs:
   build:
-
-    runs-on: ubuntu-latest
-    env:
-      NODE_ENV: test
-			DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
-			DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
-			DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
-			DATABASE_HOST: remotemysql.com
-			JWT_SECRET: ${{ secrets.JWT_SECRET }}
+  
+  runs-on: ubuntu-latest
+  env:
+    NODE_ENV: test
+    DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
+		DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+		DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+		DATABASE_HOST: remotemysql.com
+		JWT_SECRET: ${{ secrets.JWT_SECRET }}
     
     strategy:
       matrix:
